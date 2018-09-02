@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "kotori_dumper",
+    "name": "Dumper",
+    "description": "Dump files.",
+    "version": "${version}",
+    "mcversion": "1.12.2",
+    "url": "https://plus.google.com/u/0/110505282762835681917/about",
+    "updateUrl": "",
+    "authorList": [ "Kotori" ],
+    "credits": "Kotori",
+    "logoFile": "",
+    "screenshots": [ ],
+    "dependencies": [ ]
+  }
+]
