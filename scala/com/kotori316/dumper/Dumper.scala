@@ -2,7 +2,7 @@ package com.kotori316.dumper
 
 import java.nio.file.{Files, Paths}
 
-import com.kotori316.dumper.dumps.items.ItemsDump
+import com.kotori316.dumper.dumps.items.{BlocksDump, ItemsDump}
 import com.kotori316.dumper.dumps.{EnchantmentNames, FluidNames, ModNames, TENames}
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.Mod
@@ -12,13 +12,12 @@ import org.apache.logging.log4j.LogManager
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.util.Try
 
-@Mod(modid = "kotori_dumper", name = "Dumper", version = "${version}", clientSideOnly = true, modLanguage = "scala")
+@Mod(modid = "kotori_dumper", name = "Dumper", version = "${version}", modLanguage = "scala", canBeDeactivated = true)
 object Dumper {
     val mod_ID = "kotori_dumper"
     val logger = LogManager.getLogger(mod_ID)
-    val dumpers = Seq(ModNames, EnchantmentNames, FluidNames, TENames, ItemsDump)
+    val dumpers = Seq(ModNames, EnchantmentNames, FluidNames, TENames, ItemsDump, BlocksDump)
     var enables = Set.empty[String]
 
     @Mod.EventHandler
@@ -35,8 +34,8 @@ object Dumper {
         if (Files.notExists(ROOTPath))
             Files.createDirectories(ROOTPath)
         val futures = Future.traverse(dumpers)(d => {
-            val future = Future.fromTry(Try(d()))
-            future.onFailure { case e: Exception => logger.error(e) }
+            val future = Future(d())
+            future.onFailure { case e: Exception => logger.error(d.getClass, e) }
             future
         })
         Await.ready(futures, Duration.Inf)

@@ -28,7 +28,7 @@ trait SFilter extends Filter {
     }
 
     override final def writeToFile(): Unit = {
-        val s = short ++ Seq("", "") ++ unique ++ Seq(unique.reduce((s1, s2) => s1 + ", " + s2), short.size.toString)
+        val s = short ++ Seq("", "") ++ unique.distinct ++ Seq(unique.distinct.reduce((s1, s2) => s1 + ", " + s2), short.size.toString)
         Files.write(out, s.asJava)
     }
 }
@@ -38,8 +38,8 @@ object OreFilter extends SFilter {
     override val out: Path = Paths.get(Dumper.mod_ID, "ore.txt")
 
     override def accept(stack: ItemStack): Boolean = {
-        val oreName = BlocksDump.oreName(stack)
-        oreName.nonEmpty && oreDicPattern.matcher(oreName).matches()
+        val oreName = BlocksDump.oreNameSeq(stack)
+        oreName.nonEmpty && oreName.exists(n => oreDicPattern.matcher(n).matches())
     }
 }
 
@@ -55,13 +55,13 @@ object WoodFilter extends SFilter {
         val s = stack.getItem.getItemStackDisplayName(stack)
         if (woodPATTERN.matcher(s).matches)
             return true
-        val orename = BlocksDump.oreName(stack)
-        woodDicPATTERN.matcher(orename).matches
+        val orename = BlocksDump.oreNameSeq(stack)
+        orename.exists(woodDicPATTERN.matcher(_).matches)
     }
 }
 
 object LeaveFilter extends SFilter {
     override val out: Path = Paths.get(Dumper.mod_ID, "leave.txt")
 
-    override def accept(stack: ItemStack): Boolean = "treeLeaves" == BlocksDump.oreName(stack)
+    override def accept(stack: ItemStack): Boolean = BlocksDump.oreNameSeq(stack).contains("treeLeaves")
 }

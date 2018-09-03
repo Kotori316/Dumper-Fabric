@@ -24,20 +24,27 @@ trait Dumps {
                     Files.move(path1, path2, StandardCopyOption.REPLACE_EXISTING)
                 Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING)
             }
-            Files.write(path, content().asJava)
+            val nano = System.nanoTime()
+            val c = content()
+            val strings = c :+ s"Output took ${((System.nanoTime() - nano) / 1e9).toString.substring(0, 4)}s"
+            Files.write(path, strings.asJava)
         }
     }
 
     def content(): Seq[String]
 
     def oreName(stack: ItemStack): String = {
+        oreNameSeq(stack).mkString(", ") match {
+            case "" => ""
+            case s => " : OredictionaryName " + s
+        }
+    }
+
+    def oreNameSeq(stack: ItemStack): Array[String] = {
         Some(stack).filterNot(_.isEmpty).toArray
           .flatMap(s => OreDictionary.getOreIDs(s))
           .map(OreDictionary.getOreName)
           .filterNot(_ == "Unknown")
-          .sorted.mkString(", ") match {
-            case "" => ""
-            case s => " : OredictionaryName " + s
-        }
+          .sorted
     }
 }
