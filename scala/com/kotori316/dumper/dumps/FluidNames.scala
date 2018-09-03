@@ -10,9 +10,9 @@ object FluidNames extends Dumps {
     override val fileName: String = "fluid"
     private[this] val defaultFluidNameField = classOf[FluidRegistry].getDeclaredField("defaultFluidName")
     defaultFluidNameField.setAccessible(true)
-    val defaultFluidNameMap = defaultFluidNameField.get(null).asInstanceOf[BiMap[String, String]].asScala
+    lazy val defaultFluidNameMap = defaultFluidNameField.get(null).asInstanceOf[BiMap[String, String]].asScala
     //noinspection ScalaDeprecation
-    val nameToIdMap = FluidRegistry.getRegisteredFluidIDs.asScala.map { case (f, i) => f -> Int.unbox(i) }
+    lazy val nameToIdMap = FluidRegistry.getRegisteredFluidIDs.asScala
 
     override def content(): Seq[String] = {
         val fluids = FluidRegistry.getRegisteredFluids.asScala.map { case (s, f) => FD(s, f) }

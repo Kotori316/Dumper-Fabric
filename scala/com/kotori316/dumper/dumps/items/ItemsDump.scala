@@ -33,13 +33,14 @@ object ItemsDump extends Dumps {
         }
         val seq = ForgeRegistries.ITEMS.asScala.map(item => {
             val nonNullList = NonNullList.create[ItemStack]()
-            Try(
+            Try {
                 if (item.getCreativeTab != null) {
                     item.getSubItems(item.getCreativeTab, nonNullList)
                 } else {
                     CreativeTabs.CREATIVE_TAB_ARRAY.foreach(item.getSubItems(_, nonNullList))
-                    if (nonNullList.isEmpty) nonNullList.add(new ItemStack(item))
-                }).recover(printStackTrace)
+                }
+                if (nonNullList.isEmpty) nonNullList.add(new ItemStack(item))
+            }.recover(printStackTrace)
             ID(item, nonNullList)
         }).flatMap(id => {
             filters.find(_.addtoList(id.fStack, id.shortName, id.displayName, id.registryName.toString))
