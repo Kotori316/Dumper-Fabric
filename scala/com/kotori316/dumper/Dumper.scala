@@ -39,7 +39,10 @@ object Dumper {
             future
         })
         Await.ready(futures, Duration.Inf)
-        val l2 = System.nanoTime()
-        logger.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
+        futures.onComplete { _ =>
+            val l2 = System.nanoTime()
+            logger.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
+        }
+
     }
 }
