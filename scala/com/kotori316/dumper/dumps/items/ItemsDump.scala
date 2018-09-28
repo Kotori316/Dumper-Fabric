@@ -70,7 +70,7 @@ object ItemsDump extends Dumps {
                 })
             } else {
                 val first = format.format(id, if (hasSubType) fStack.getItemDamage else "", displayName) + " : " + registryName + oreName(fStack)
-                first :: rest.map(s => format.format(id, s.getItemDamage, TextFormatting.getTextWithoutFormattingCodes(s.getDisplayName)) + oreName(s))
+                first :: rest.map(s => format.format(id, s.getItemDamage, TextFormatting.getTextWithoutFormattingCodes(s.getDisplayName)) + " : " + registryName + oreName(s))
             }
         }
 
