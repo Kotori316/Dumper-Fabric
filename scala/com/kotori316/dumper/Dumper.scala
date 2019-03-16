@@ -15,34 +15,34 @@ import scala.concurrent.{Await, Future}
 
 @Mod(modid = "kotori_dumper", name = "Dumper", version = "${version}", modLanguage = "scala", canBeDeactivated = true)
 object Dumper {
-    val mod_ID = "kotori_dumper"
-    val logger = LogManager.getLogger(mod_ID)
-    val dumpers = Seq(ModNames, EnchantmentNames, FluidNames, TENames, ItemsDump, BlocksDump)
-    var enables = Set.empty[String]
+  val mod_ID = "kotori_dumper"
+  val logger = LogManager.getLogger(mod_ID)
+  val dumpers = Seq(ModNames, EnchantmentNames, FluidNames, TENames, ItemsDump, BlocksDump)
+  var enables = Set.empty[String]
 
-    @Mod.EventHandler
-    def preInit(event: FMLPreInitializationEvent): Unit = {
-        val c = new Configuration(event.getSuggestedConfigurationFile)
-        enables = dumpers.map(_.configName).filter(s => c.getBoolean(s, Configuration.CATEGORY_GENERAL, true, s)).toSet
-        if (c.hasChanged) c.save()
+  @Mod.EventHandler
+  def preInit(event: FMLPreInitializationEvent): Unit = {
+    val c = new Configuration(event.getSuggestedConfigurationFile)
+    enables = dumpers.map(_.configName).filter(s => c.getBoolean(s, Configuration.CATEGORY_GENERAL, true, s)).toSet
+    if (c.hasChanged) c.save()
+  }
+
+  @Mod.EventHandler
+  def loadComplete(event: FMLLoadCompleteEvent): Unit = {
+    val l = System.nanoTime()
+    val ROOTPath = Paths.get(mod_ID)
+    if (Files.notExists(ROOTPath))
+      Files.createDirectories(ROOTPath)
+    val futures = Future.traverse(dumpers)(d => {
+      val future = Future(d())
+      future.onFailure { case e: Exception => logger.error(d.getClass, e) }
+      future
+    })
+    Await.ready(futures, Duration.Inf)
+    futures.onComplete { _ =>
+      val l2 = System.nanoTime()
+      logger.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
     }
 
-    @Mod.EventHandler
-    def loadComplete(event: FMLLoadCompleteEvent): Unit = {
-        val l = System.nanoTime()
-        val ROOTPath = Paths.get(mod_ID)
-        if (Files.notExists(ROOTPath))
-            Files.createDirectories(ROOTPath)
-        val futures = Future.traverse(dumpers)(d => {
-            val future = Future(d())
-            future.onFailure { case e: Exception => logger.error(d.getClass, e) }
-            future
-        })
-        Await.ready(futures, Duration.Inf)
-        futures.onComplete { _ =>
-            val l2 = System.nanoTime()
-            logger.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
-        }
-
-    }
+  }
 }
