@@ -2,13 +2,12 @@ package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Dumps
-import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.{Item, ItemGroup, ItemStack}
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.{NonNullList, ResourceLocation}
-import net.minecraftforge.fml.common.registry.ForgeRegistries
+import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -21,7 +20,7 @@ object ItemsDump extends Dumps {
 
   override def apply(): Unit = {
     super.apply()
-    if (Dumper.enables.contains(configName)) {
+    if (isEnabled) {
       filters.foreach(_.writeToFile())
     }
   }
@@ -29,15 +28,15 @@ object ItemsDump extends Dumps {
   override def content(): Seq[String] = {
     val first = Seq("Items", "Number : ID: meta : Name")
     val printStackTrace: PartialFunction[Throwable, Unit] = {
-      case e: Throwable => Dumper.logger.error(e)
+      case e: Throwable => Dumper.LOGGER.error(e)
     }
     val seq = ForgeRegistries.ITEMS.asScala.map(item => {
       val nonNullList = NonNullList.create[ItemStack]()
       Try {
-        if (item.getCreativeTab != null) {
-          item.getSubItems(item.getCreativeTab, nonNullList)
+        if (item.getGroup != null) {
+          item.fillItemGroup(item.getGroup, nonNullList)
         } else {
-          CreativeTabs.CREATIVE_TAB_ARRAY.foreach(item.getSubItems(_, nonNullList))
+          ItemGroup.GROUPS.foreach(item.fillItemGroup(_, nonNullList))
         }
         if (nonNullList.isEmpty) nonNullList.add(new ItemStack(item))
       }.recover(printStackTrace)
@@ -55,22 +54,23 @@ object ItemsDump extends Dumps {
   case class ID(item: Item, nn: NonNullList[ItemStack]) {
     val registryName: ResourceLocation = item.getRegistryName
     val id = Item.getIdFromItem(item)
-    val hasSubType = item.getHasSubtypes
+    val hasSubType = nn.size() > 1
+    //item.getHasSubtypes
     val list = nn.asScala.toList
     val fStack :: rest = list
-    val displayName = if (fStack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getItemStackDisplayName(fStack))
+    val displayName = if (fStack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getDisplayName(fStack).getFormattedText)
 
     def strings = {
       if (item == Items.ENCHANTED_BOOK) {
         list.map(stack => {
           format.format(id, "", displayName) + " : " +
             EnchantmentHelper.getEnchantments(stack).asScala.map { case (enchantment, level) =>
-              TextFormatting.getTextWithoutFormattingCodes(enchantment.getTranslatedName(level))
+              TextFormatting.getTextWithoutFormattingCodes(enchantment.func_200305_d(level).getFormattedText)
             }.mkString(", ")
         })
       } else {
-        val first = format.format(id, if (hasSubType) fStack.getItemDamage else "", displayName) + " : " + registryName + oreName(fStack)
-        first :: rest.map(s => format.format(id, s.getItemDamage, TextFormatting.getTextWithoutFormattingCodes(s.getDisplayName)) + " : " + registryName + oreName(s))
+        val first = format.format(id, if (hasSubType) fStack.getDamage else "", displayName) + " : " + registryName + oreName(fStack)
+        first :: rest.map(s => format.format(id, s.getDamage, s.getDisplayName.getUnformattedComponentText) + " : " + registryName + oreName(s))
       }
     }
 

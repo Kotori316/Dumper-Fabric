@@ -1,12 +1,13 @@
 package com.kotori316.dumper.dumps.items
 
-import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Dumps
 import net.minecraft.block.Block
 import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemBlock, ItemStack}
+import net.minecraft.item.{ItemBlock, ItemStack}
+import net.minecraft.tags.BlockTags
 import net.minecraft.util.NonNullList
-import net.minecraftforge.fml.common.registry.ForgeRegistries
+import net.minecraft.util.registry.IRegistry
+import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
 
@@ -17,24 +18,29 @@ object BlocksDump extends Dumps {
 
   override def apply(): Unit = {
     super.apply()
-    if (Dumper.enables.contains(configName)) {
+    if (isEnabled) {
       filters.foreach(_.writeToFile())
     }
   }
 
   override def content(): Seq[String] = {
-    ForgeRegistries.BLOCKS.asScala.map(BD.apply).flatMap(_.stacks).map { e: BlockStack =>
-      filters.find(_.addToList(e.stack, e.o, e.stack.getDisplayName, e.bd.name.toString))
+    val vanillaRegistry: IRegistry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WAPPAER_ID, classOf[IRegistry[Block]])
+
+    ForgeRegistries.BLOCKS.asScala.map(b => BD.apply(b, vanillaRegistry.getId(b))).flatMap(_.stacks).map { e: BlockStack =>
+      filters.find(_.addToList(e.bd.block, e.o, e.stack.getDisplayName.getUnformattedComponentText, e.bd.name.toString))
       e.o
     }.zipWithIndex.map { case (s, i) => "%4d : %s".format(i, s) }.toSeq
   }
 
-  case class BD(block: Block) {
-    val item = Item.getItemFromBlock(block)
-    val id = Block.getIdFromBlock(block)
+  def oreNameSeq(block: Block) = {
+    BlockTags.getCollection.getTagMap.asScala.filter { case (_, tag) => tag.contains(block) }.keys
+  }
+
+  case class BD(block: Block, id: Int) {
+    val item = block.asItem()
     val name = block.getRegistryName
     val blocks = NonNullList.create[ItemStack]()
-    block.getSubBlocks(block.getCreativeTabToDisplayOn, blocks)
+    block.fillItemGroup(item.getGroup, blocks)
 
     def stacks: Seq[BlockStack] = {
       if (blocks.isEmpty) {
@@ -59,7 +65,7 @@ object BlocksDump extends Dumps {
         NNStack(p_bd, p_stack)
       else {
         new BlockStack {
-          override val o: String = f.format(p_bd.id, p_stack.getItemDamage, "")
+          override val o: String = f.format(p_bd.id, p_stack.getDamage, "")
           override val bd: BD = p_bd
           override val stack: ItemStack = ItemStack.EMPTY
         }
@@ -68,7 +74,7 @@ object BlocksDump extends Dumps {
   }
 
   case class NNStack(bd: BD, stack: ItemStack) extends BlockStack {
-    val o = f.format(bd.id, stack.getMetadata, stack.getDisplayName) + oreName(stack)
+    val o = f.format(bd.id, stack.getDamage, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
   }
 
   case class FBS(bd: BD, stack: ItemStack) extends BlockStack {
@@ -83,11 +89,11 @@ object BlocksDump extends Dumps {
     val o: String =
       if (stack.isEmpty) {
         if (bd.item == Items.AIR)
-          f.format(bd.id, if (bd.item.getHasSubtypes) stack.getMetadata else "", bd.block.getLocalizedName) + " : " + bd.name
+          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.block.getTranslationKey) + " : " + bd.name
         else
-          f.format(bd.id, if (bd.item.getHasSubtypes) stack.getMetadata else "", bd.item.getItemStackDisplayName(stack)) + " : " + bd.name
+          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.item.getDisplayName(stack)) + " : " + bd.name
       } else {
-        f.format(bd.id, if (bd.item.getHasSubtypes) stack.getMetadata else "", stack.getDisplayName) +
+        f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", stack.getDisplayName.getUnformattedComponentText) +
           classString + " : " + bd.name + oreName(stack)
       }
   }
