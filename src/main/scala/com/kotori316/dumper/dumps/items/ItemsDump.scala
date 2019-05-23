@@ -65,7 +65,7 @@ object ItemsDump extends Dumps {
         list.map(stack => {
           format.format(id, "", displayName) + " : " +
             EnchantmentHelper.getEnchantments(stack).asScala.map { case (enchantment, level) =>
-              TextFormatting.getTextWithoutFormattingCodes(enchantment.func_200305_d(level).getFormattedText)
+              TextFormatting.getTextWithoutFormattingCodes(enchantment.getDisplayName(level).getFormattedText)
             }.mkString(", ")
         })
       } else {

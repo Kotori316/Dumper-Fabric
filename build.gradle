@@ -23,7 +23,7 @@ compileScala {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20180921-1.13'
+    mappings channel: 'snapshot', version: '20190522-1.13.2'
     runs {
         client {
             workingDirectory project.file('Minecraft')
@@ -60,7 +60,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.191'
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.214'
     implementation "org.scala-lang:scala-library:2.12.8"
 }
 
