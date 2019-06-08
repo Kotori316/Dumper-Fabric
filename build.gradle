@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = getProperty("modversion")
+version = getProperty("modVersion")
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Dumper-1.13.2"
 
@@ -86,9 +86,44 @@ task srcJar(type: Jar) {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'deobf'
+    manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : "Kotori316",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.version,
+                "Implementation-Vendor"   : "Kotori316",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
 
 // Tell the artifact system about our extra jars
 artifacts {
     archives srcJar, deobfJar
 }
+
+task signJar2() << {
+    ant.signjar(
+            jar: jar.archivePath,
+            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+            sigalg: "SHA1withRSA",
+            digestalg: "SHA-256",
+            tsaurl: "http://timestamp.digicert.com"
+    )
+    ant.signjar(
+            jar: deobfJar.archivePath,
+            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+            sigalg: "SHA1withRSA",
+            digestalg: "SHA-256",
+            tsaurl: "http://timestamp.digicert.com"
+    )
+}
+
+// Runs this task automatically when build is ran.
+assemble.dependsOn(signJar2)
