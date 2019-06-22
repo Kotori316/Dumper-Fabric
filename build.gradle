@@ -60,7 +60,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.214'
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
     implementation "org.scala-lang:scala-library:2.12.8"
 }
 
