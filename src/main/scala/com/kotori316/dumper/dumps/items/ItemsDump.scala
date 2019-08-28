@@ -1,10 +1,9 @@
 package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.Dumper
-import com.kotori316.dumper.dumps.Dumps
+import com.kotori316.dumper.dumps.{Dumps, Filter}
 import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.init.Items
-import net.minecraft.item.{Item, ItemGroup, ItemStack}
+import net.minecraft.item.{Item, ItemGroup, ItemStack, Items}
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.{NonNullList, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
@@ -12,20 +11,20 @@ import net.minecraftforge.registries.ForgeRegistries
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-object ItemsDump extends Dumps {
+object ItemsDump extends Dumps[ItemStack] {
   override val configName: String = "OutputAllItems"
-  override val fileName: String = "allitemslist"
-  private val filters = Seq(PickaxeFilter, AxeFilter, ShovelFilter, SwordFilter)
+  override val fileName: String = "AllItemsList"
 
+  override def getFilters: Seq[Filter[ItemStack]] = Seq(new PickaxeFilter, new AxeFilter, new ShovelFilter, new SwordFilter)
 
-  override def apply(): Unit = {
-    super.apply()
+  override def output(filters: Seq[Filter[ItemStack]]): Unit = {
+    super.output(filters)
     if (isEnabled) {
       filters.foreach(_.writeToFile())
     }
   }
 
-  override def content(): Seq[String] = {
+  override def content(filters: Seq[Filter[ItemStack]]): Seq[String] = {
     val first = Seq("Items", "Number : ID: meta : Name")
     val printStackTrace: PartialFunction[Throwable, Unit] = {
       case e: Throwable => Dumper.LOGGER.error(e)

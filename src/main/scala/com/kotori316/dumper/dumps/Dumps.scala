@@ -9,17 +9,21 @@ import net.minecraft.util.ResourceLocation
 
 import scala.collection.JavaConverters._
 
-trait Dumps {
+trait Dumps[T] {
 
   val configName: String
   val fileName: String
 
   val factoryClass = Class.forName("net.minecraftforge.registries.NamespacedWrapper$Factory")
-  val WAPPAER_ID = factoryClass.getDeclaredField("ID").get(null).asInstanceOf[ResourceLocation]
+  val WRAPPER_ID = factoryClass.getDeclaredField("ID").get(null).asInstanceOf[ResourceLocation]
 
   def path: Path = Paths.get(Dumper.modID, fileName + ".txt")
 
   def apply(): Unit = {
+    output(getFilters)
+  }
+
+  def output(filters: Seq[Filter[T]]): Unit = {
     if (isEnabled) {
       val path1 = Paths.get(Dumper.modID, s"1_${fileName}_1.txt")
       val path2 = Paths.get(Dumper.modID, s"2_${fileName}_2.txt")
@@ -29,7 +33,7 @@ trait Dumps {
         Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING)
       }
       val nano = System.nanoTime()
-      val c = content()
+      val c = content(filters)
       val strings = c :+ s"Output took ${((System.nanoTime() - nano) / 1e9).toString.substring(0, 4)}s"
       Files.write(path, strings.asJava)
     }
@@ -39,7 +43,9 @@ trait Dumps {
     Dumper.getInstance().config.enables.find(_.getPath.contains(configName)).fold(false)(_.get())
   }
 
-  def content(): Seq[String]
+  def content(filters: Seq[Filter[T]]): Seq[String]
+
+  def getFilters: Seq[Filter[T]] = Nil
 
   def oreName(stack: ItemStack): String = {
     oreNameSeq(stack).mkString(", ") match {

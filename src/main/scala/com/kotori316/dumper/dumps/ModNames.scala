@@ -6,12 +6,12 @@ import net.minecraftforge.forgespi.language.IModInfo
 
 import scala.collection.JavaConverters._
 
-object ModNames extends Dumps {
+object ModNames extends Dumps[IModInfo] {
 
   override val configName: String = "OutputModNames"
   override val fileName: String = "mods"
 
-  override def content(): Seq[String] = {
+  override def content(filters: Seq[Filter[IModInfo]]):Seq[String] = {
     val modContainers = ModList.get().getMods.asScala.map(ModData.apply)
     //    val apiContainers = ModAPIManager.INSTANCE.getAPIList.asScala.toSeq.sortBy(_.getModId.toLowerCase)
     // val map = modContainers.filterNot(_.isDummy).map(o => (o.getSource, o.getSource.getMods.get(0).getDisplayName))

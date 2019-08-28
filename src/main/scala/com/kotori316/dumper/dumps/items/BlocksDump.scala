@@ -1,30 +1,30 @@
 package com.kotori316.dumper.dumps.items
 
-import com.kotori316.dumper.dumps.Dumps
+import com.kotori316.dumper.dumps.{Dumps, Filter}
 import net.minecraft.block.Block
-import net.minecraft.init.Items
-import net.minecraft.item.{ItemBlock, ItemStack}
+import net.minecraft.item.{BlockItem, ItemStack, Items}
 import net.minecraft.tags.BlockTags
-import net.minecraft.util.NonNullList
-import net.minecraft.util.registry.IRegistry
+import net.minecraft.util.registry.Registry
+import net.minecraft.util.{NonNullList, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
 
-object BlocksDump extends Dumps {
+object BlocksDump extends Dumps[Block] {
   override val configName: String = "outputBlocks"
   override val fileName: String = "blocksOutput"
-  private[this] final val filters = Seq(OreFilter, WoodFilter, LeaveFilter)
 
-  override def apply(): Unit = {
-    super.apply()
+  override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
+
+  override def output(filters: Seq[Filter[Block]]): Unit = {
+    super.output(filters)
     if (isEnabled) {
       filters.foreach(_.writeToFile())
     }
   }
 
-  override def content(): Seq[String] = {
-    val vanillaRegistry: IRegistry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WAPPAER_ID, classOf[IRegistry[Block]])
+  override def content(filters: Seq[Filter[Block]]): Seq[String] = {
+    val vanillaRegistry: Registry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WRAPPER_ID, classOf[Registry[Block]])
 
     ForgeRegistries.BLOCKS.asScala.map(b => BD.apply(b, vanillaRegistry.getId(b))).flatMap(_.stacks).map { e: BlockStack =>
       filters.find(_.addToList(e.bd.block, e.o, e.stack.getDisplayName.getUnformattedComponentText, e.bd.name.toString))
@@ -32,8 +32,8 @@ object BlocksDump extends Dumps {
     }.zipWithIndex.map { case (s, i) => "%4d : %s".format(i, s) }.toSeq
   }
 
-  def oreNameSeq(block: Block) = {
-    BlockTags.getCollection.getTagMap.asScala.filter { case (_, tag) => tag.contains(block) }.keys
+  def oreNameSeq(block: Block): Iterable[ResourceLocation] = {
+    BlockTags.getCollection.getTagMap.asScala.collect { case (key, tag) if tag.contains(block) => key }
   }
 
   case class BD(block: Block, id: Int) {
@@ -81,7 +81,7 @@ object BlocksDump extends Dumps {
 
     def classString = {
       val clazz = bd.item.getClass
-      if (clazz != classOf[ItemBlock])
+      if (clazz != classOf[BlockItem])
         " : " + clazz.getName
       else ""
     }

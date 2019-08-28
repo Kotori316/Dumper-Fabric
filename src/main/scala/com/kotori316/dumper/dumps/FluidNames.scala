@@ -1,11 +1,8 @@
 package com.kotori316.dumper.dumps
 
-import com.google.common.collect.BiMap
-import net.minecraftforge.fluids.{Fluid, FluidRegistry}
+import net.minecraftforge.fluids.Fluid
 
-import scala.collection.JavaConverters._
-
-object FluidNames extends Dumps {
+object FluidNames extends Dumps[Fluid] {
   override val configName: String = "OutputFluid"
   override val fileName: String = "fluid"
   /*private[this] val defaultFluidNameField = classOf[FluidRegistry].getDeclaredField("defaultFluidName")
@@ -14,7 +11,7 @@ object FluidNames extends Dumps {
   //noinspection ScalaDeprecation
   lazy val nameToIdMap = FluidRegistry.getRegisteredFluidIDs.asScala*/
 
-  override def content(): Seq[String] = {
+  override def content(filters: Seq[Filter[Fluid]]):Seq[String] = {
     /*val fluids = FluidRegistry.getRegisteredFluids.asScala.map { case (s, f) => FD(s, f) }
     val maxRNameLength = fluids.map(_.uniqueName.length).max
     val maxUNameLength = fluids.map(_.fluid.getUnlocalizedName.length).max

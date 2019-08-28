@@ -4,6 +4,7 @@ import java.nio.file.{Files, Path, Paths}
 import java.util.regex.Pattern
 
 import com.kotori316.dumper.Dumper
+import com.kotori316.dumper.dumps.Filter
 import net.minecraft.block.Block
 import net.minecraft.tags.{BlockTags, ItemTags}
 import net.minecraftforge.api.distmarker.Dist
@@ -35,19 +36,19 @@ trait SFilter extends Filter[Block] {
   }
 }
 
-object OreFilter extends SFilter {
-  private[this] final val oreDicPattern = Pattern.compile("^ore[A-Z].*")
+class OreFilter extends SFilter {
+  private[this] final val oreDicPattern = Pattern.compile("(forge:ores)|(.*:ores/.*)")
   override val out: Path = Paths.get(Dumper.modID, "ore.txt")
 
-  override def accept(block: Block) = {
+  override def accept(block: Block): Boolean = {
     val oreName = BlocksDump.oreNameSeq(block)
-    oreName.exists(n => oreDicPattern.matcher(n.getPath).matches())
+    oreName.exists(n => oreDicPattern.matcher(n.toString).matches())
   }
 }
 
-object WoodFilter extends SFilter {
+class WoodFilter extends SFilter {
   private[this] final val woodPATTERN = Pattern.compile(".* Wood")
-  private[this] final val woodDicPATTERN = Pattern.compile("^wood[A-Z].*")
+  private[this] final val woodDicPATTERN = Pattern.compile("^(.*:logs)|(wood[A-Z].*)")
 
   override val out: Path = Paths.get(Dumper.modID, "wood.txt")
 
@@ -63,11 +64,11 @@ object WoodFilter extends SFilter {
     if (nameFlag)
       return true
     val oreName = BlocksDump.oreNameSeq(block)
-    oreName.exists(n => woodDicPATTERN.matcher(n.getPath).matches)
+    oreName.exists(n => woodDicPATTERN.matcher(n.toString).matches)
   }
 }
 
-object LeaveFilter extends SFilter {
+class LeaveFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "leave.txt")
 
   override def accept(block: Block) = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
