@@ -1,6 +1,7 @@
 package com.kotori316.dumper.dumps
 
-import net.minecraftforge.fluids.Fluid
+import net.minecraft.fluid.Fluid
+
 
 object FluidNames extends Dumps[Fluid] {
   override val configName: String = "OutputFluid"
