@@ -1,9 +1,9 @@
 package com.kotori316.dumper.dumps
 
-import net.minecraft.client.resources.I18n
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.registry.Registry
+import net.minecraft.util.text.{TextFormatting, TranslationTextComponent}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.collection.JavaConverters._
@@ -26,7 +26,7 @@ object EnchantmentNames extends Dumps[Enchantment] {
   case class EData(name: ResourceLocation, e: Enchantment, id: Int) extends Ordered[EData] {
     override def compare(that: EData): Int = this.id compare that.id
 
-    def translatedName = I18n.format(e.getName)
+    def translatedName = TextFormatting.getTextWithoutFormattingCodes(new TranslationTextComponent(e.getName).getFormattedText)
   }
 
   object EData {
