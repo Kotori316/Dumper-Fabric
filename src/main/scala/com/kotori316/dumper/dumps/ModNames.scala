@@ -11,25 +11,32 @@ object ModNames extends Dumps[IModInfo] {
   override val configName: String = "OutputModNames"
   override val fileName: String = "mods"
 
-  override def content(filters: Seq[Filter[IModInfo]]):Seq[String] = {
-    val modContainers = ModList.get().getMods.asScala.map(ModData.apply)
+  final val formatter = new Formatter[ModData](Seq("Number", "-ModID", "-Name", "Version", "-File Name", "-Class"),
+    Seq(_.i, _.getModId, d => "\"" + d.getName + "\"", _.mod.getVersion, _.getSource match {
+      case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
+      case _ => ""
+    }, data => ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")))
+
+  override def content(filters: Seq[Filter[IModInfo]]): Seq[String] = {
+    val modContainers = ModList.get().getMods.asScala.zipWithIndex.map((ModData.apply _).tupled)
     //    val apiContainers = ModAPIManager.INSTANCE.getAPIList.asScala.toSeq.sortBy(_.getModId.toLowerCase)
     // val map = modContainers.filterNot(_.isDummy).map(o => (o.getSource, o.getSource.getMods.get(0).getDisplayName))
 
-    val maxId: Int = modContainers.map(_.idLength).max
-    val maxName: Int = modContainers.map(_.nameLength + 2).max
-    val format = s"%3d : %-${maxId}s : %-${maxName}s : %s : %s : %s"
-    val mods = for ((data, index) <- modContainers.zipWithIndex) yield {
-      val id = data.getModId
-      val name = "\"" + data.getName + "\""
-      val ver = data.mod.getVersion
-      val file = data.getSource match {
-        case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
-        case _ => ""
-      }
-      val modObjClassName = ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")
-      format.format(index + 1, id, name, ver, file, modObjClassName)
-    }
+    //    val maxId: Int = modContainers.map(_.idLength).max
+    //    val maxName: Int = modContainers.map(_.nameLength + 2).max
+    //    val format = s"%3d : %-${maxId}s : %-${maxName}s : %s : %s : %s"
+    //    val mods = for ((data, index) <- modContainers.zipWithIndex) yield {
+    //      val id = data.getModId
+    //      val name = "\"" + data.getName + "\""
+    //      val ver = data.mod.getVersion
+    //      val file = data.getSource match {
+    //        case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
+    //        case _ => ""
+    //      }
+    //      val modObjClassName = ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")
+    //      format.format(index + 1, id, name, ver, file, modObjClassName)
+    //    }
+    val mods = formatter.format(modContainers)
 
     val apiS = Nil /*apiContainers.map(api => {
       val name = "\"" + api.getModId + "\""
@@ -38,10 +45,10 @@ object ModNames extends Dumps[IModInfo] {
       val providedMod = map.get(file)
       s"$name : ${providedMod.getOrElse(file.toString)} : $ver"
     })*/
-    "Number:Mod ID:Name:Version" +: (if (apiS.nonEmpty) mods ++ Seq("", "", "Supported API { ApiName, Provided, version }") ++ apiS else mods)
+    if (apiS.nonEmpty) mods ++ Seq("", "", "Supported API { ApiName, Provided, version }") ++ apiS else mods
   }
 
-  case class ModData(mod: IModInfo) {
+  case class ModData(mod: IModInfo, i: Int) {
     def getName = mod.getDisplayName
 
     def getModId = mod.getModId

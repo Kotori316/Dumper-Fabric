@@ -11,16 +11,21 @@ import scala.collection.JavaConverters._
 object EnchantmentNames extends Dumps[Enchantment] {
   override val configName: String = "OutputEnchantments"
   override val fileName: String = "enchantment"
+  final val formatter = new Formatter[EData](Seq(" ID", "-name", "-Registry Name", "MaxLevel", "Rarity", "Treasure"),
+    Seq(_.id, _.translatedName, _.name, _.e.getMaxLevel, _.e.getRarity, _.e.isTreasureEnchantment)
+  )
 
-  override def content(filters: Seq[Filter[Enchantment]]):Seq[String] = {
+  override def content(filters: Seq[Filter[Enchantment]]): Seq[String] = {
     implicit val vanillaRegistry: Registry[Enchantment] = ForgeRegistries.ENCHANTMENTS.getSlaveMap(WRAPPER_ID, classOf[Registry[Enchantment]])
     val data = ForgeRegistries.ENCHANTMENTS.getEntries.asScala.toSeq.map(EData.apply).sorted
-    val mn: Int = data.map(_.translatedName.length).max
-    val mi: Int = data.map(_.name.toString.length).max
-    //       index   id    name  Resource maxLevel rarity treasure
-    val f = s"%3d : %3d : %-${mn}s : %-${mi}s : %d : %s : %b"
-    "number : ID : name : mod : MaxLevel : Rarity : Treasure" +: data.zipWithIndex
-      .map { case (e, i) => f.format(i, e.id, e.translatedName, e.name, e.e.getMaxLevel, e.e.getRarity, e.e.isTreasureEnchantment) }
+    val seq = formatter.format(data)
+    seq
+    //    val mn: Int = data.map(_.translatedName.length).max
+    //    val mi: Int = data.map(_.name.toString.length).max
+    //    //      id    name  Resource maxLevel rarity treasure
+    //    val f = s"%3s : %-${mn}s : %-${mi}s : %s : %-${lengthOfRarity}s : %s"
+    //    f.format("ID", "name", "Registry Name", "MaxLevel", "Rarity", "Treasure") +: data
+    //      .map(e => f.format(e.id, e.translatedName, e.name, e.e.getMaxLevel, e.e.getRarity, e.e.isTreasureEnchantment))
   }
 
   case class EData(name: ResourceLocation, e: Enchantment, id: Int) extends Ordered[EData] {

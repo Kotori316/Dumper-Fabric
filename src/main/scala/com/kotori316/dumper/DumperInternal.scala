@@ -2,8 +2,8 @@ package com.kotori316.dumper
 
 import java.nio.file.{Files, Paths}
 
+import com.kotori316.dumper.dumps._
 import com.kotori316.dumper.dumps.items.{BlocksDump, ItemsDump}
-import com.kotori316.dumper.dumps.{Dumps, EnchantmentNames, ModNames, TENames}
 import net.minecraftforge.common.ForgeConfigSpec
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent
@@ -14,7 +14,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
 object DumperInternal {
-  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, /*FluidNames,*/ TENames)
+  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames)
   val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump)
 
   def loadComplete(event: FMLLoadCompleteEvent): Unit = {
