@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tags.ItemTags
 import net.minecraft.util.ResourceLocation
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 trait Dumps[T] {
 

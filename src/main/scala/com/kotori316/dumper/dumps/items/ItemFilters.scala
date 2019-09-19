@@ -10,7 +10,7 @@ import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.item._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class PickaxeFilter extends Filter[ItemStack] {
   private[this] final val PICKAXEOutput = Paths.get(Dumper.modID, "pickaxes.txt")
@@ -143,7 +143,7 @@ class AxeFilter extends Filter[ItemStack] {
       Seq("", "") ++
       axeShort ++
       Seq("", "", axeShort.reduce((s1, s2) => s1 + ", " + s2), axeShort.size.toString)
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     Files.write(AXEOutput, s.asJava)
   }
 }

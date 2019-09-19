@@ -5,7 +5,7 @@ import net.minecraft.fluid.Fluid
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object FluidNames extends Dumps[Fluid] {
   override val configName: String = "OutputFluid"
@@ -21,7 +21,7 @@ object FluidNames extends Dumps[Fluid] {
   private[this] final val hasBlock = "hasBlock"
   final val formatter = new Formatter[Fluid](Seq("-RegistryName", "-Name", luminosity, density, temperature, viscosity, gaseous, rarity, color, hasBlock),
     Seq(_.getRegistryName, f => new TranslationTextComponent(f.getAttributes.getTranslationKey).getFormattedText, _.getAttributes.getLuminosity, _.getAttributes.getDensity,
-      _.getAttributes.getTemperature + " [K]", _.getAttributes.getViscosity, _.getAttributes.isGaseous, _.getAttributes.getRarity.toString,
+      _.getAttributes.getTemperature.toString + " [K]", _.getAttributes.getViscosity, _.getAttributes.isGaseous, _.getAttributes.getRarity.toString,
       _.getAttributes.getColor.toHexString, _.getDefaultState.getBlockState != Blocks.AIR.getDefaultState))
 
   override def content(filters: Seq[Filter[Fluid]]): Seq[String] = {

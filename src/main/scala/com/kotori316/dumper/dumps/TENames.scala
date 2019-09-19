@@ -7,7 +7,7 @@ import net.minecraft.util.Direction
 import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.control.Exception._
 import scala.util.{Failure, Success, Try}
 
@@ -39,7 +39,7 @@ object TENames extends Dumps[TileEntity] {
           case Failure(exception) => exception.toString
         }
 
-        Seq(name + " : " + clazz.getName, capName)
+        Seq(name.toString + " : " + clazz.getName, capName)
 
     }
     "------Capabilities------" +: (a ++ Seq("", "", "------TileEntities------") ++ b)

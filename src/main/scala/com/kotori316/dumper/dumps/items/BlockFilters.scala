@@ -10,8 +10,8 @@ import net.minecraft.tags.{BlockTags, ItemTags}
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 trait SFilter extends Filter[Block] {
 

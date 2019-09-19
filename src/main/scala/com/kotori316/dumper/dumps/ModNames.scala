@@ -4,7 +4,7 @@ import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo
 import net.minecraftforge.forgespi.language.IModInfo
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ModNames extends Dumps[IModInfo] {
 

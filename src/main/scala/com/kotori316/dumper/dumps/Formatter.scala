@@ -2,10 +2,10 @@ package com.kotori316.dumper.dumps
 
 class Formatter[A](rows: Seq[String], converters: Seq[A => Any]) {
 
-  require(rows.size == converters.size, s"rows ${rows} doesn't match converters ${converters}.")
+  require(rows.size == converters.size, s"rows $rows doesn't match converters $converters.")
 
-  def format(as: Seq[A]): Seq[String] = {
-    val converted: Seq[Seq[String]] = as.map(a => converters.map(_.apply(a).toString))
+  def format(as: scala.collection.Seq[A]): Seq[String] = {
+    val converted: Seq[Seq[String]] = as.map(a => converters.map(_.apply(a).toString)).toSeq
     val lengthMaxes: Seq[Int] = (rows +: converted).map(_.map(_.length)).foldLeft(Seq.fill(rows.size)(0)) {
       case (s1, s2) => (s1 zip s2).map { case (i, i1) => i max i1 }
     }

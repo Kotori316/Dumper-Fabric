@@ -8,7 +8,7 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.{NonNullList, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 object ItemsDump extends Dumps[ItemStack] {

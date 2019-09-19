@@ -6,7 +6,7 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.text.{TextFormatting, TranslationTextComponent}
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object EnchantmentNames extends Dumps[Enchantment] {
   override val configName: String = "OutputEnchantments"

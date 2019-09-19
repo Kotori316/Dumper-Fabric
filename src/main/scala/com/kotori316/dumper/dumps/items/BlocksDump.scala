@@ -8,7 +8,7 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.{NonNullList, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object BlocksDump extends Dumps[Block] {
   override val configName: String = "outputBlocks"
