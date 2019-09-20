@@ -49,9 +49,9 @@ object DumperInternal {
 
 class Config(builder: ForgeConfigSpec.Builder) {
   builder.comment("Which information to output?").push("setting")
-  val enables0 = DumperInternal.loadCompleteDumpers.view.map(_.configName).map(n =>
+  val enables0 = DumperInternal.loadCompleteDumpers.map(_.configName).map(n =>
     builder.comment(s"Enable output of $n.").define(n, true))
-  val enables1 = DumperInternal.loginDumpers.view.map(_.configName).map(n =>
+  val enables1 = DumperInternal.loginDumpers.map(_.configName).map(n =>
     builder.comment(s"Enable output of $n.").define(n, true))
   val enables = enables0 ++ enables1
   builder.pop()
