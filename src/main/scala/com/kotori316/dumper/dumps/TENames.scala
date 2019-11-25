@@ -21,8 +21,8 @@ object TENames extends Dumps[TileEntity] {
   override def content(filters: Seq[Filter[TileEntity]]): Seq[String] = {
     val value = ForgeRegistries.TILE_ENTITIES
     val REGISTRY = value.getKeys.asScala.clone().map(name => {
-      val tileType: TileEntityType[_ <: TileEntity] = value.getValue(name)
-      val instance: Try[TileEntity] = nonFatalCatch withTry tileType.create()
+      val tileType: TileEntityType[_ <: TileEntity] = value.getValue(name).asInstanceOf[TileEntityType[_ <: TileEntity]]
+      val instance: Try[TileEntity] = allCatch withTry tileType.create()
       val clazz = instance.map(_.getClass).getOrElse(classOf[TileEntity])
       (name, clazz, instance)
     }).toSeq.sortBy(_._1.toString)
