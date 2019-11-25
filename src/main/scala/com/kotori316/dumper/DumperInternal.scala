@@ -3,7 +3,7 @@ package com.kotori316.dumper
 import java.nio.file.{Files, Paths}
 
 import com.kotori316.dumper.dumps._
-import com.kotori316.dumper.dumps.items.{BlocksDump, ItemsDump}
+import com.kotori316.dumper.dumps.items.{BlocksDump, ItemsDump, TagDump}
 import net.minecraftforge.common.ForgeConfigSpec
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent
@@ -14,7 +14,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
 object DumperInternal {
-  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames)
+  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames, TagDump)
   val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump)
 
   def loadComplete(event: FMLLoadCompleteEvent): Unit = {
@@ -30,15 +30,15 @@ object DumperInternal {
     val ROOTPath = Paths.get(Dumper.modID)
     if (Files.notExists(ROOTPath))
       Files.createDirectories(ROOTPath)
-    val futures = Future.traverse(dumpers)(d => {
-      val future = Future(d())
+    val futures = Future.traverse(dumpers) { d =>
+      val future = Future(d.apply())
       future.onComplete {
         case Failure(exception) => Dumper.LOGGER.error(d.getClass, exception)
-        case _ =>
+        case _ => Dumper.LOGGER.info(s"Success to output ${d.fileName}.txt")
       }
       future
-    })
-    Await.ready(futures, Duration.Inf)
+    }
+    Await.ready(futures, Duration(1, "min"))
     futures.onComplete { _ =>
       val l2 = System.nanoTime()
       Dumper.LOGGER.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
