@@ -14,8 +14,8 @@ import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
 object DumperInternal {
-  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames, TagDump)
-  val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump)
+  val loadCompleteDumpers: Seq[Dumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames)
+  val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump, TagDump)
 
   def loadComplete(event: FMLLoadCompleteEvent): Unit = {
     output(loadCompleteDumpers)

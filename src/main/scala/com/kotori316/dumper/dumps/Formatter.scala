@@ -11,6 +11,7 @@ class Formatter[A](rows: Seq[String], converters: Seq[A => Any]) {
     }
     val formatString = (lengthMaxes zip rows).map { case (i, str) => s"%${getMinus(str)}${i}s" }.mkString(" : ")
     (removeMinus(rows) +: converted).map(ss => formatString.format(ss: _*))
+      .map(s => ("0" + s).trim.substring(1))
   }
 
   def getMinus(s: String) = if (s.startsWith("-")) "-" else ""
