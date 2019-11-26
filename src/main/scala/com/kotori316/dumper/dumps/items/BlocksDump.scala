@@ -37,10 +37,10 @@ object BlocksDump extends Dumps[Block] {
   }
 
   case class BD(block: Block, id: Int) {
-    val item = block.asItem()
+    val item = Option(block.asItem())
     val name = block.getRegistryName
     val blocks = NonNullList.create[ItemStack]()
-    block.fillItemGroup(item.getGroup, blocks)
+    item.foreach(i => block.fillItemGroup(i.getGroup, blocks))
 
     def stacks: Seq[BlockStack] = {
       if (blocks.isEmpty) {
@@ -80,18 +80,20 @@ object BlocksDump extends Dumps[Block] {
   case class FBS(bd: BD, stack: ItemStack) extends BlockStack {
 
     def classString = {
-      val clazz = bd.item.getClass
-      if (clazz != classOf[BlockItem])
-        " : " + clazz.getName
-      else ""
+      bd.item.map { i =>
+        val clazz = i.getClass
+        if (clazz != classOf[BlockItem])
+          " : " + clazz.getName
+        else ""
+      }.getOrElse("Null")
     }
 
     val o: String =
       if (stack.isEmpty) {
-        if (bd.item == Items.AIR)
+        if (bd.item contains Items.AIR)
           f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.block.getTranslationKey) + " : " + bd.name
         else
-          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.item.getDisplayName(stack)) + " : " + bd.name
+          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.item.map(_.getDisplayName(stack)).getOrElse("Null")) + " : " + bd.name
       } else {
         f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", stack.getDisplayName.getUnformattedComponentText) +
           classString + " : " + bd.name + oreName(stack)
