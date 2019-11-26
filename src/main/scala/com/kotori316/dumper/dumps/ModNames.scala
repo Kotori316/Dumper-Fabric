@@ -12,7 +12,7 @@ object ModNames extends Dumps[IModInfo] {
   override val fileName: String = "mods"
 
   final val formatter = new Formatter[ModData](Seq("Number", "-ModID", "-Name", "Version", "-File Name", "-Class"),
-    Seq(_.i, _.getModId, d => "\"" + d.getName + "\"", _.mod.getVersion, _.getSource match {
+    Seq(_.num, _.getModId, d => "\"" + d.getName + "\"", _.mod.getVersion, _.getSource match {
       case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
       case _ => ""
     }, data => ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")))
@@ -49,6 +49,8 @@ object ModNames extends Dumps[IModInfo] {
   }
 
   case class ModData(mod: IModInfo, i: Int) {
+    val num = i + 1
+
     def getName = mod.getDisplayName
 
     def getModId = mod.getModId
