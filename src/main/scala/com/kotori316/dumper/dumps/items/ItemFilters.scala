@@ -12,7 +12,7 @@ import net.minecraft.item._
 
 import scala.jdk.CollectionConverters._
 
-class PickaxeFilter extends Filter[ItemStack] {
+class PickaxeFilter extends Filter[ItemData] {
   private[this] final val PICKAXEOutput = Paths.get(Dumper.modID, "pickaxes.txt")
   private[this] final val PICKAXE_PATTERN = Pattern.compile(".*pickaxe", Pattern.CASE_INSENSITIVE)
   private[this] final val PICKAXE_PATTERN2 = Pattern.compile(".*_(pickaxe|pick_)")
@@ -25,9 +25,10 @@ class PickaxeFilter extends Filter[ItemStack] {
       PICKAXE_PATTERN.matcher(displayName).matches ||
       PICKAXE_PATTERN2.matcher(uniqueName).find
 
-  override def addToList(v: ItemStack, shortName: String, displayName: String, uniqueName: String) = {
-    if (accept(v.getItem, displayName, uniqueName)) {
-      pickaxeBuilder += (shortName + " : " + v.getDestroySpeed(Blocks.STONE.getDefaultState))
+  override def addToList(v: ItemData): Boolean = {
+    val uniqueName = v.item.getRegistryName.toString
+    if (accept(v.item, v.displayName, uniqueName)) {
+      pickaxeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.STONE.getDefaultState))
       pickaxeShortBuilder += uniqueName
       true
     } else
@@ -45,7 +46,7 @@ class PickaxeFilter extends Filter[ItemStack] {
   }
 }
 
-class SwordFilter extends Filter[ItemStack] {
+class SwordFilter extends Filter[ItemData] {
   private[this] final val SWORD_PATTERN = Pattern.compile(".*(sword)", Pattern.CASE_INSENSITIVE)
   private[this] final val SWORD_PATTERN2 = Pattern.compile(".*_sword", Pattern.CASE_INSENSITIVE)
   private[this] final val SWORDOutput = Paths.get(Dumper.modID, "swords.txt")
@@ -58,12 +59,13 @@ class SwordFilter extends Filter[ItemStack] {
       SWORD_PATTERN.matcher(displayName).matches ||
       SWORD_PATTERN2.matcher(uniqueName).find
 
-  override def addToList(v: ItemStack, shortName: String, displayName: String, uniqueName: String) = {
-    if (accept(v.getItem, displayName, uniqueName)) {
-      val valueMap = v.getItem.getAttributeModifiers(EquipmentSlotType.MAINHAND, v)
+  override def addToList(v: ItemData): Boolean = {
+    val uniqueName = v.item.getRegistryName.toString
+    if (accept(v.item, v.displayName, uniqueName)) {
+      val valueMap = v.item.getAttributeModifiers(EquipmentSlotType.MAINHAND, v.stack)
       val damage = valueMap.get(SharedMonsterAttributes.ATTACK_DAMAGE.getName).asScala.map(_.getAmount)
       val speed = valueMap.get(SharedMonsterAttributes.ATTACK_SPEED.getName).asScala.map(f => "%.1f".format(f.getAmount * -1))
-      SWORDBuilder += (shortName + " : " + damage.mkString(", ") + " : " + speed.mkString(", "))
+      SWORDBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + damage.mkString(", ") + " : " + speed.mkString(", "))
       SWORDShortBuilder += uniqueName
       true
     } else
@@ -72,7 +74,7 @@ class SwordFilter extends Filter[ItemStack] {
 
   override def writeToFile(): Unit = {
     val SWORDShort = SWORDShortBuilder.result()
-    val s: Seq[String] = Seq("Sword", "   ID: Damage: Name : ATTACK_DAMAGE : ATTACK_SPEED") ++
+    val s: Seq[String] = Seq("Sword", "Name : Damage : ATTACK_DAMAGE : ATTACK_SPEED") ++
       SWORDBuilder.result() ++
       Seq("", "") ++
       SWORDShort ++
@@ -81,7 +83,7 @@ class SwordFilter extends Filter[ItemStack] {
   }
 }
 
-class ShovelFilter extends Filter[ItemStack] {
+class ShovelFilter extends Filter[ItemData] {
   private[this] final val SHOVELOutput = Paths.get(Dumper.modID, "shovels.txt")
   private[this] final val SHOVEL_PATTERN = Pattern.compile(".*(shovel|spade)", Pattern.CASE_INSENSITIVE)
   private[this] final val SHOVEL_PATTERN2 = Pattern.compile(".*_(shovel|spade)")
@@ -94,9 +96,10 @@ class ShovelFilter extends Filter[ItemStack] {
       SHOVEL_PATTERN.matcher(displayName).matches ||
       SHOVEL_PATTERN2.matcher(uniqueName).find
 
-  override def addToList(v: ItemStack, shortName: String, displayName: String, uniqueName: String) = {
-    if (accept(v.getItem, displayName, uniqueName)) {
-      SHOVELBuilder += (shortName + " : " + v.getDestroySpeed(Blocks.GRASS_BLOCK.getDefaultState))
+  override def addToList(v: ItemData): Boolean = {
+    val uniqueName = v.item.getRegistryName.toString
+    if (accept(v.item, v.displayName, uniqueName)) {
+      SHOVELBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.GRASS_BLOCK.getDefaultState))
       SHOVELShortBuilder += uniqueName
       true
     } else
@@ -114,7 +117,7 @@ class ShovelFilter extends Filter[ItemStack] {
   }
 }
 
-class AxeFilter extends Filter[ItemStack] {
+class AxeFilter extends Filter[ItemData] {
   private[this] final val AXEOutput = Paths.get(Dumper.modID, "axes.txt")
   private[this] final val AXE_PATTERN = Pattern.compile(".*axe", Pattern.CASE_INSENSITIVE)
   private[this] final val AXE_PATTERN2 = Pattern.compile(".*_axe")
@@ -127,9 +130,10 @@ class AxeFilter extends Filter[ItemStack] {
       AXE_PATTERN.matcher(displayName).matches ||
       AXE_PATTERN2.matcher(uniqueName).find
 
-  override def addToList(v: ItemStack, shortName: String, displayName: String, uniqueName: String) = {
-    if (accept(v.getItem, displayName, uniqueName)) {
-      axeBuilder += (shortName + " : " + v.getDestroySpeed(Blocks.OAK_LOG.getDefaultState))
+  override def addToList(v: ItemData): Boolean = {
+    val uniqueName = v.item.getRegistryName.toString
+    if (accept(v.item, v.displayName, uniqueName)) {
+      axeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.OAK_LOG.getDefaultState))
       axeShortBuilder += uniqueName
       true
     } else

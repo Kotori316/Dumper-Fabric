@@ -16,18 +16,11 @@ object BlocksDump extends Dumps[Block] {
 
   override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
 
-  override def output(filters: Seq[Filter[Block]]): Unit = {
-    super.output(filters)
-    if (isEnabled) {
-      filters.foreach(_.writeToFile())
-    }
-  }
-
   override def content(filters: Seq[Filter[Block]]): Seq[String] = {
     val vanillaRegistry: Registry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WRAPPER_ID, classOf[Registry[Block]])
 
     ForgeRegistries.BLOCKS.asScala.map(b => BD.apply(b, vanillaRegistry.getId(b))).flatMap(_.stacks).map { e: BlockStack =>
-      filters.find(_.addToList(e.bd.block, e.o, e.stack.getDisplayName.getUnformattedComponentText, e.bd.name.toString))
+      filters.find(_.addToList(e.bd.block))
       e.o
     }.zipWithIndex.map { case (s, i) => "%4d : %s".format(i, s) }.toSeq
   }

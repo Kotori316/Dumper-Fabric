@@ -6,6 +6,7 @@ import java.util.regex.Pattern
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
 import net.minecraft.block.Block
+import net.minecraft.item.ItemStack
 import net.minecraft.tags.{BlockTags, ItemTags}
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
@@ -22,10 +23,10 @@ trait SFilter extends Filter[Block] {
 
   def accept(block: Block): Boolean
 
-  override final def addToList(v: Block, shortName: String, displayName: String, uniqueName: String) = {
+  override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
-      short += shortName
-      unique += uniqueName
+      short += v.getNameTextComponent.getFormattedText + BlocksDump.oreName(new ItemStack(v))
+      unique += v.getRegistryName.toString
       true
     } else false
   }

@@ -36,6 +36,8 @@ trait Dumps[T] {
       val c = content(filters)
       val strings = c :+ s"Output took ${((System.nanoTime() - nano) / 1e9).toString.substring(0, 4)}s"
       Files.write(path, strings.asJava)
+
+      filters.foreach(_.writeToFile())
     }
   }
 
