@@ -144,6 +144,7 @@ githubRelease {
             deobfJar.getArchiveFile().get(),
             srcJar.getArchiveFile().get()
     )
+    overwrite true
 }
 
 task checkOutput() {
