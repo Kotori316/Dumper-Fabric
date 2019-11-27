@@ -8,7 +8,10 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
-apply plugin: 'scala'
+plugins {
+    id('scala')
+    id "com.github.breadmoirai.github-release" version "2.2.9"
+}
 apply plugin: 'net.minecraftforge.gradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -125,5 +128,13 @@ task signJar2() << {
     )
 }
 
-// Runs this task automatically when build is ran.
-assemble.dependsOn(signJar2)
+if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
+    // Runs this task automatically when build is ran.
+    assemble.dependsOn(signJar2)
+}
+
+githubRelease {
+    repo = 'Dumper'
+    token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : ""
+    targetCommitish = '1.14.4'
+}
