@@ -137,4 +137,6 @@ githubRelease {
     repo = 'Dumper'
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : ""
     targetCommitish = '1.14.4'
+    FilenameFilter filter = { dir, filename -> filename.contains(project.version.toString()) }
+    releaseAssets = jar.destinationDir.listFiles filter
 }
