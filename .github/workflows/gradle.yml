@@ -13,7 +13,9 @@ jobs:
     name: Log Debug Info
     steps:
       - name: Log
-        run: echo ${{ toJson(github) }}
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "${GITHUB_CONTEXT}"
         
   build:
     runs-on: ubuntu-latest
