@@ -35,6 +35,6 @@ jobs:
     - name: Precompile
       run: chmod +x ./gradlew && ./gradlew compileScala --continue
     - name: Build
-      run: chmod +x ./gradlew && ./gradlew githubRelease --continue
+      run: chmod +x ./gradlew && ./gradlew githubRelease --info --warning-mode all --continue
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

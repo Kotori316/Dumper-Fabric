@@ -107,25 +107,27 @@ artifacts {
     archives srcJar, deobfJar
 }
 
-task signJar2() << {
-    ant.signjar(
-            jar: jar.archivePath,
-            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-            sigalg: "SHA1withRSA",
-            digestalg: "SHA-256",
-            tsaurl: "http://timestamp.digicert.com"
-    )
-    ant.signjar(
-            jar: deobfJar.archivePath,
-            alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-            keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-            storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-            sigalg: "SHA1withRSA",
-            digestalg: "SHA-256",
-            tsaurl: "http://timestamp.digicert.com"
-    )
+task signJar2() {
+    doLast {
+        ant.signjar(
+                jar: jar.getArchiveFile().get(),
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
+        ant.signjar(
+                jar: deobfJar.getArchiveFile().get(),
+                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
+                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
+                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
+                sigalg: "SHA1withRSA",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com"
+        )
+    }
 }
 
 if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
@@ -137,6 +139,21 @@ githubRelease {
     repo = 'Dumper'
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : String.valueOf(System.getenv("REPO_TOKEN"))
     targetCommitish = '1.14.4'
-    FilenameFilter filter = { dir, filename -> filename.contains(project.version.toString()) }
-    releaseAssets = jar.destinationDir.listFiles filter
+    releaseAssets = files(
+            jar.getArchiveFile().get(),
+            deobfJar.getArchiveFile().get(),
+            srcJar.getArchiveFile().get()
+    )
+}
+
+task checkOutput() {
+    doLast {
+        FilenameFilter filter = { dir, filename -> filename.contains(project.version.toString()) }
+        println(project.version.toString())
+        println(jar.getArchiveFile().get())
+        println(deobfJar.getArchiveFile().get())
+        println(srcJar.getArchiveFile().get())
+        println(jar.destinationDir)
+        println(jar.destinationDir.listFiles(filter))
+    }
 }
