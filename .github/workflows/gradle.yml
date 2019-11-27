@@ -1,4 +1,4 @@
-name: Java CI
+name: Publish
 
 on:
   push:
@@ -30,5 +30,9 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-    - name: Build with Gradle
-      run: ./gradlew compileScala --continue
+    - name: Precompile
+      run: chmod +x ./gradlew && ./gradlew compileScala --continue
+    - name: Build
+      run: chmod +x ./gradlew && ./gradlew githubRelease --continue
+      env:
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
