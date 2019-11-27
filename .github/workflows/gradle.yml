@@ -37,4 +37,4 @@ jobs:
     - name: Build
       run: chmod +x ./gradlew && ./gradlew githubRelease --continue
       env:
-        REPO_TOKEN: ${{ secrets.MY_TOKEN }}
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
