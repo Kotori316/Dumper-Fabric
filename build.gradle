@@ -63,8 +63,9 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.87'
+    minecraft 'net.minecraftforge:forge:1.15.1-30.0.14'
     implementation "org.scala-lang:scala-library:2.13.1"
+    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.0.0'
 }
 
 jar {
@@ -138,7 +139,7 @@ if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
 githubRelease {
     repo = 'Dumper'
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : String.valueOf(System.getenv("REPO_TOKEN"))
-    targetCommitish = '1.14.4'
+    targetCommitish = '1.15.1'
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),

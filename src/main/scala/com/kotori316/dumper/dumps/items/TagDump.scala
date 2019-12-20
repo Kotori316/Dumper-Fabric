@@ -19,7 +19,7 @@ object TagDump extends Dumps[Tag[_]] {
   override def content(filters: Seq[Filter[Tag[_]]]): Seq[String] = {
     tagToMessage(ItemTags.getCollection, "Items") ++
       tagToMessage(BlockTags.getCollection, "Blocks") ++
-      tagToMessage(FluidTags.getCollection, "Fluids") ++
+      tagToMessage(FluidTags.func_226157_a_, "Fluids") ++
       tagToMessage(EntityTypeTags.getCollection, "Entities")
   }
 
