@@ -63,7 +63,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.1-30.0.18'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.0.1'
     implementation "org.scala-lang:scala-library:2.13.1"
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 }
