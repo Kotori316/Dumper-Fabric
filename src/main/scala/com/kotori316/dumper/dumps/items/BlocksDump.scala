@@ -2,7 +2,7 @@ package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.dumps.{Dumps, Filter}
 import net.minecraft.block.Block
-import net.minecraft.item.{BlockItem, ItemStack, Items}
+import net.minecraft.item.{BlockItem, Item, ItemStack, Items}
 import net.minecraft.tags.BlockTags
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.{NonNullList, ResourceLocation}
@@ -30,9 +30,9 @@ object BlocksDump extends Dumps[Block] {
   }
 
   case class BD(block: Block, id: Int) {
-    val item = Option(block.asItem())
-    val name = block.getRegistryName
-    val blocks = NonNullList.create[ItemStack]()
+    val item: Option[Item] = Option(block.asItem())
+    val name: ResourceLocation = block.getRegistryName
+    val blocks: NonNullList[ItemStack] = NonNullList.create[ItemStack]()
     item.foreach(i => block.fillItemGroup(i.getGroup, blocks))
 
     def stacks: Seq[BlockStack] = {
@@ -67,12 +67,12 @@ object BlocksDump extends Dumps[Block] {
   }
 
   case class NNStack(bd: BD, stack: ItemStack) extends BlockStack {
-    val o = f.format(bd.id, stack.getDamage, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
+    val o: String = f.format(bd.id, stack.getDamage, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
   }
 
   case class FBS(bd: BD, stack: ItemStack) extends BlockStack {
 
-    def classString = {
+    def classString: String = {
       bd.item.map { i =>
         val clazz = i.getClass
         if (clazz != classOf[BlockItem])

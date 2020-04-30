@@ -72,5 +72,5 @@ class WoodFilter extends SFilter {
 class LeaveFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "leave.txt")
 
-  override def accept(block: Block) = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
+  override def accept(block: Block): Boolean = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
 }

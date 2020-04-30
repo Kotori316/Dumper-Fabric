@@ -19,7 +19,7 @@ class PickaxeFilter extends Filter[ItemData] {
   private[this] final val pickaxeBuilder = Seq.newBuilder[String]
   private[this] final val pickaxeShortBuilder = Seq.newBuilder[String]
 
-  def accept(item: Item, displayName: String, uniqueName: String) =
+  def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[PickaxeItem] ||
       PICKAXE_PATTERN.matcher(item.getTranslationKey).matches ||
       PICKAXE_PATTERN.matcher(displayName).matches ||
@@ -53,7 +53,7 @@ class SwordFilter extends Filter[ItemData] {
   private[this] final val SWORDBuilder = Seq.newBuilder[String]
   private[this] final val SWORDShortBuilder = Seq.newBuilder[String]
 
-  def accept(item: Item, displayName: String, uniqueName: String) =
+  def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[SwordItem] ||
       SWORD_PATTERN.matcher(item.getTranslationKey).matches ||
       SWORD_PATTERN.matcher(displayName).matches ||
@@ -90,7 +90,7 @@ class ShovelFilter extends Filter[ItemData] {
   private[this] final val SHOVELBuilder = Seq.newBuilder[String]
   private[this] final val SHOVELShortBuilder = Seq.newBuilder[String]
 
-  def accept(item: Item, displayName: String, uniqueName: String) =
+  def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[ShovelItem] ||
       SHOVEL_PATTERN.matcher(item.getTranslationKey).matches ||
       SHOVEL_PATTERN.matcher(displayName).matches ||
@@ -124,7 +124,7 @@ class AxeFilter extends Filter[ItemData] {
   private[this] final val axeBuilder = Seq.newBuilder[String]
   private[this] final val axeShortBuilder = Seq.newBuilder[String]
 
-  def accept(item: Item, displayName: String, uniqueName: String) =
+  def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[AxeItem] ||
       AXE_PATTERN.matcher(item.getTranslationKey).matches ||
       AXE_PATTERN.matcher(displayName).matches ||

@@ -14,8 +14,8 @@ trait Dumps[T] {
   val configName: String
   val fileName: String
 
-  val factoryClass = Class.forName("net.minecraftforge.registries.NamespacedWrapper$Factory")
-  val WRAPPER_ID = factoryClass.getDeclaredField("ID").get(null).asInstanceOf[ResourceLocation]
+  private[this] final val factoryClass = Class.forName("net.minecraftforge.registries.NamespacedWrapper$Factory")
+  val WRAPPER_ID: ResourceLocation = factoryClass.getDeclaredField("ID").get(null).asInstanceOf[ResourceLocation]
 
   def path: Path = Paths.get(Dumper.modID, fileName + ".txt")
 
@@ -56,7 +56,7 @@ trait Dumps[T] {
     }
   }
 
-  def oreNameSeq(stack: ItemStack) = {
-    ItemTags.getCollection.getTagMap.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }
+  def oreNameSeq(stack: ItemStack): Iterator[ResourceLocation] = {
+    ItemTags.getCollection.getTagMap.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }.iterator
   }
 }

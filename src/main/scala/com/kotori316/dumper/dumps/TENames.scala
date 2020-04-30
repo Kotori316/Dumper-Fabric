@@ -15,7 +15,7 @@ object TENames extends Dumps[TileEntity] {
   override val configName: String = "OutputTileentity"
   override val fileName: String = "tileentity"
 
-  val field_Capacity = classOf[CapabilityManager].getDeclaredField("providers")
+  private[this] final val field_Capacity = classOf[CapabilityManager].getDeclaredField("providers")
   field_Capacity.setAccessible(true)
 
   override def content(filters: Seq[Filter[TileEntity]]): Seq[String] = {

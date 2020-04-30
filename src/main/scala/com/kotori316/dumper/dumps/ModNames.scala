@@ -2,7 +2,7 @@ package com.kotori316.dumper.dumps
 
 import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo
-import net.minecraftforge.forgespi.language.IModInfo
+import net.minecraftforge.forgespi.language.{IModFileInfo, IModInfo}
 
 import scala.jdk.CollectionConverters._
 
@@ -49,19 +49,19 @@ object ModNames extends Dumps[IModInfo] {
   }
 
   case class ModData(mod: IModInfo, i: Int) {
-    val num = i + 1
+    val num: Int = i + 1
 
-    def getName = mod.getDisplayName
+    def getName: String = mod.getDisplayName
 
-    def getModId = mod.getModId
+    def getModId: String = mod.getModId
 
-    def getSource = mod.getOwningFile
+    def getSource: IModFileInfo = mod.getOwningFile
 
-    def idLength = mod.getModId.length
+    def idLength: Int = mod.getModId.length
 
-    def nameLength = getName.length
+    def nameLength: Int = getName.length
 
-    def isDummy = getSource == null
+    def isDummy: Boolean = getSource == null
   }
 
 }

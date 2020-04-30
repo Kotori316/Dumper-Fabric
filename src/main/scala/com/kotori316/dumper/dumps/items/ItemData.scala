@@ -10,11 +10,11 @@ import scala.jdk.javaapi.CollectionConverters
 
 case class ItemData(index: Int, stack: ItemStack) {
   @Nonnull
-  def item = stack.getItem
+  def item: Item = stack.getItem
 
   def id: Int = Item.getIdFromItem(item)
 
-  def displayName = if (stack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getDisplayName(stack).getFormattedText)
+  def displayName: String = if (stack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getDisplayName(stack).getFormattedText)
 
   def tags: String = {
     if (stack.getItem == Items.ENCHANTED_BOOK) {

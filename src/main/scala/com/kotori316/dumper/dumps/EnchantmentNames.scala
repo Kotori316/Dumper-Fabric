@@ -31,7 +31,7 @@ object EnchantmentNames extends Dumps[Enchantment] {
   case class EData(name: ResourceLocation, e: Enchantment, id: Int) extends Ordered[EData] {
     override def compare(that: EData): Int = this.id compare that.id
 
-    def translatedName = TextFormatting.getTextWithoutFormattingCodes(new TranslationTextComponent(e.getName).getFormattedText)
+    def translatedName: String = TextFormatting.getTextWithoutFormattingCodes(new TranslationTextComponent(e.getName).getFormattedText)
   }
 
   object EData {

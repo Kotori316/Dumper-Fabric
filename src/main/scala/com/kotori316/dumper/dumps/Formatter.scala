@@ -14,7 +14,7 @@ class Formatter[A](rows: Seq[String], converters: Seq[A => Any]) {
       .map(s => ("0" + s).trim.substring(1))
   }
 
-  def getMinus(s: String) = if (s.startsWith("-")) "-" else ""
+  def getMinus(s: String): String = if (s.startsWith("-")) "-" else ""
 
-  def removeMinus(ss: Seq[String]) = ss.map(s => if (s.startsWith("-")) s.tail else s)
+  def removeMinus(ss: Seq[String]): Seq[String] = ss.map(s => if (s.startsWith("-")) s.tail else s)
 }
