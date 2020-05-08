@@ -8,6 +8,7 @@ import com.kotori316.dumper.dumps.Filter
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
 import net.minecraft.tags.{BlockTags, ItemTags}
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
 
@@ -25,7 +26,7 @@ trait SFilter extends Filter[Block] {
 
   override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
-      short += v.getNameTextComponent.getFormattedText + BlocksDump.oreName(new ItemStack(v))
+      short += new TranslationTextComponent(v.getTranslationKey).getFormattedText + BlocksDump.oreName(new ItemStack(v))
       unique += v.getRegistryName.toString
       true
     } else false
