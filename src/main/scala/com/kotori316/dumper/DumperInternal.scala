@@ -9,8 +9,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.util.Failure
 
 object DumperInternal {
@@ -38,7 +37,7 @@ object DumperInternal {
       }
       future
     }
-    Await.ready(futures, Duration(1, "min"))
+    //    Await.ready(futures, Duration(1, "min"))
     futures.onComplete { _ =>
       val l2 = System.nanoTime()
       Dumper.LOGGER.info(f"Dumper finished in ${(l2 - l) / 1e9}%.3f s")
