@@ -139,7 +139,7 @@ if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
 githubRelease {
     repo = 'Dumper'
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : String.valueOf(System.getenv("REPO_TOKEN"))
-    targetCommitish = '1.15.1'
+    targetCommitish = '1.16'
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),
