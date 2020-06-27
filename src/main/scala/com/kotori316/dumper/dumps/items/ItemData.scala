@@ -14,12 +14,12 @@ case class ItemData(index: Int, stack: ItemStack) {
 
   def id: Int = Item.getIdFromItem(item)
 
-  def displayName: String = if (stack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getDisplayName(stack).getFormattedText)
+  def displayName: String = if (stack.isEmpty) "Unnamed" else TextFormatting.getTextWithoutFormattingCodes(item.getDisplayName(stack).getString)
 
   def tags: String = {
     if (stack.getItem == Items.ENCHANTED_BOOK) {
       CollectionConverters.asScala(EnchantmentHelper.getEnchantments(stack)).map { case (enchantment, level) =>
-        TextFormatting.getTextWithoutFormattingCodes(enchantment.getDisplayName(level).getFormattedText)
+        TextFormatting.getTextWithoutFormattingCodes(enchantment.getDisplayName(level).getString)
       }.mkString(", ")
     } else {
       CollectionConverters.asScala(ItemTags.getCollection.getOwningTags(item)).mkString(", ")

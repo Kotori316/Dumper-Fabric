@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
 import net.minecraft.block.Blocks
-import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.entity.ai.attributes.Attributes
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.item._
 
@@ -63,8 +63,8 @@ class SwordFilter extends Filter[ItemData] {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
       val valueMap = v.item.getAttributeModifiers(EquipmentSlotType.MAINHAND, v.stack)
-      val damage = valueMap.get(SharedMonsterAttributes.ATTACK_DAMAGE.getName).asScala.map(_.getAmount)
-      val speed = valueMap.get(SharedMonsterAttributes.ATTACK_SPEED.getName).asScala.map(f => "%.1f".format(f.getAmount * -1))
+      val damage = valueMap.get(Attributes.field_233823_f_).asScala.map(_.getAmount)
+      val speed = valueMap.get(Attributes.field_233825_h_).asScala.map(f => "%.1f".format(f.getAmount * -1))
       SWORDBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + damage.mkString(", ") + " : " + speed.mkString(", "))
       SWORDShortBuilder += uniqueName
       true

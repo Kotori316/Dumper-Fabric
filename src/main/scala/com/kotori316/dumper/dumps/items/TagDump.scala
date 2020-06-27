@@ -7,7 +7,6 @@ import net.minecraftforge.registries.IForgeRegistryEntry
 
 import scala.jdk.javaapi.CollectionConverters
 
-
 object TagDump extends Dumps[Tag[_]] {
   override val configName = "OutputTagNames"
   override val fileName = "tags"
@@ -24,8 +23,8 @@ object TagDump extends Dumps[Tag[_]] {
   }
 
   def tagToMessage(collection: TagCollection[_], name: String): Seq[String] = {
-    val map: Map[ResourceLocation, Tag[_]] = CollectionConverters.asScala(collection.getTagMap).toMap
-    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.getAllElements).toSeq) }.toSeq
+    val map: Map[ResourceLocation, ITag[_]] = CollectionConverters.asScala(collection.getTagMap).toMap
+    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.func_230236_b_()).toSeq) }.toSeq
       .sortBy(_.name)
     ("-" * 10 + name + "-" * 10) +: formatter.format(tagSeq) :+ "\n"
   }

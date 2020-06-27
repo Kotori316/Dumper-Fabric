@@ -57,6 +57,6 @@ trait Dumps[T] {
   }
 
   def oreNameSeq(stack: ItemStack): Iterator[ResourceLocation] = {
-    ItemTags.getCollection.getTagMap.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }.iterator
+    ItemTags.getCollection.getTagMap.asScala.collect { case (name, tag) if tag.func_230235_a_(stack.getItem) => name }.iterator
   }
 }

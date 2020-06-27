@@ -26,7 +26,7 @@ trait SFilter extends Filter[Block] {
 
   override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
-      short += new TranslationTextComponent(v.getTranslationKey).getFormattedText + BlocksDump.oreName(new ItemStack(v))
+      short += new TranslationTextComponent(v.getTranslationKey).getString + BlocksDump.oreName(new ItemStack(v))
       unique += v.getRegistryName.toString
       true
     } else false
@@ -39,7 +39,7 @@ trait SFilter extends Filter[Block] {
 }
 
 class OreFilter extends SFilter {
-  private[this] final val oreDicPattern = Pattern.compile("(forge:ores)|(.*:ores/.*)")
+  private[this] final val oreDicPattern = Pattern.compile("(forge:ores)|(.*:ores/.*)|(.*_ores.*)")
   override val out: Path = Paths.get(Dumper.modID, "ore.txt")
 
   override def accept(block: Block): Boolean = {
@@ -55,11 +55,11 @@ class WoodFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "wood.txt")
 
   override def accept(block: Block): Boolean = {
-    if (BlockTags.LOGS.contains(block) || ItemTags.LOGS.contains(block.asItem()))
+    if (BlockTags.LOGS.func_230235_a_(block) || ItemTags.LOGS.func_230235_a_(block.asItem()))
       return true
     var nameFlag = false
-    DistExecutor.callWhenOn(Dist.CLIENT, () => () => {
-      val s = block.getNameTextComponent.getUnformattedComponentText
+    DistExecutor.safeCallWhenOn(Dist.CLIENT, () => () => {
+      val s = block.func_235333_g_().getUnformattedComponentText
       if (woodPATTERN.matcher(s).matches)
         nameFlag = true
     })
@@ -73,5 +73,5 @@ class WoodFilter extends SFilter {
 class LeaveFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "leave.txt")
 
-  override def accept(block: Block): Boolean = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
+  override def accept(block: Block): Boolean = BlockTags.LEAVES.func_230235_a_(block) || ItemTags.LEAVES.func_230235_a_(block.asItem())
 }

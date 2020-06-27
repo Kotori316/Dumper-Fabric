@@ -26,7 +26,7 @@ object BlocksDump extends Dumps[Block] {
   }
 
   def oreNameSeq(block: Block): Iterable[ResourceLocation] = {
-    BlockTags.getCollection.getTagMap.asScala.collect { case (key, tag) if tag.contains(block) => key }
+    BlockTags.getCollection.getTagMap.asScala.collect { case (key, tag) if tag.func_230235_a_(block) => key }
   }
 
   case class BD(block: Block, id: Int) {
@@ -44,7 +44,7 @@ object BlocksDump extends Dumps[Block] {
     }
   }
 
-  val f = "%4d : %3s : %s"
+  val f = "%4d : %s"
 
   sealed trait BlockStack {
     val o: String
@@ -58,7 +58,7 @@ object BlocksDump extends Dumps[Block] {
         NNStack(p_bd, p_stack)
       else {
         new BlockStack {
-          override val o: String = f.format(p_bd.id, p_stack.getDamage, "")
+          override val o: String = f.format(p_bd.id, "")
           override val bd: BD = p_bd
           override val stack: ItemStack = ItemStack.EMPTY
         }
@@ -67,7 +67,7 @@ object BlocksDump extends Dumps[Block] {
   }
 
   case class NNStack(bd: BD, stack: ItemStack) extends BlockStack {
-    val o: String = f.format(bd.id, stack.getDamage, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
+    val o: String = f.format(bd.id, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
   }
 
   case class FBS(bd: BD, stack: ItemStack) extends BlockStack {
@@ -84,11 +84,11 @@ object BlocksDump extends Dumps[Block] {
     val o: String =
       if (stack.isEmpty) {
         if (bd.item contains Items.AIR)
-          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.block.getTranslationKey) + " : " + bd.name
+          f.format(bd.id, bd.block.getTranslationKey) + " : " + bd.name
         else
-          f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", bd.item.map(_.getDisplayName(stack)).getOrElse("Null")) + " : " + bd.name
+          f.format(bd.id, bd.item.map(_.getDisplayName(stack)).getOrElse("Null")) + " : " + bd.name
       } else {
-        f.format(bd.id, if (false /*bd.item.getHasSubtypes*/ ) stack.getDamage else "", stack.getDisplayName.getUnformattedComponentText) +
+        f.format(bd.id, stack.getDisplayName.getString) +
           classString + " : " + bd.name + oreName(stack)
       }
   }

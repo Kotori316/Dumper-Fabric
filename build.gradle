@@ -18,7 +18,7 @@ apply plugin: 'net.minecraftforge.gradle'
 
 version = getProperty("modVersion")
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Dumper-1.15.1"
+archivesBaseName = "Dumper-1.16.1"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileScala {
@@ -26,7 +26,7 @@ compileScala {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200514-1.15.1'
+    mappings channel: 'snapshot', version: '20200514-1.16'
     runs {
         client {
             workingDirectory project.file('Minecraft')
@@ -63,8 +63,8 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.2-31.2.0'
-    implementation "org.scala-lang:scala-library:2.13.2"
+    minecraft 'net.minecraftforge:forge:1.16.1-32.0.23'
+    implementation "org.scala-lang:scala-library:2.13.3"
     implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
 }
 
