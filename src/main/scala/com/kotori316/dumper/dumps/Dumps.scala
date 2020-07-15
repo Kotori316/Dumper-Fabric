@@ -4,6 +4,7 @@ import java.nio.file.{Files, Path, Paths, StandardCopyOption}
 
 import com.kotori316.dumper.Dumper
 import net.minecraft.item.ItemStack
+import net.minecraft.server.MinecraftServer
 import net.minecraft.tags.ItemTags
 import net.minecraft.util.ResourceLocation
 
@@ -19,11 +20,11 @@ trait Dumps[T] {
 
   def path: Path = Paths.get(Dumper.modID, fileName + ".txt")
 
-  def apply(): Unit = {
-    output(getFilters)
+  def apply(server: MinecraftServer): Unit = {
+    output(getFilters, server)
   }
 
-  def output(filters: Seq[Filter[T]]): Unit = {
+  def output(filters: Seq[Filter[T]], server: MinecraftServer): Unit = {
     if (isEnabled) {
       val path1 = Paths.get(Dumper.modID, s"1_${fileName}_1.txt")
       val path2 = Paths.get(Dumper.modID, s"2_${fileName}_2.txt")
@@ -33,7 +34,7 @@ trait Dumps[T] {
         Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING)
       }
       val nano = System.nanoTime()
-      val c = content(filters)
+      val c = content(filters, server)
       val strings = c :+ s"Output took ${((System.nanoTime() - nano) / 1e9).toString.substring(0, 4)}s"
       Files.write(path, strings.asJava)
 
@@ -45,7 +46,7 @@ trait Dumps[T] {
     Dumper.getInstance().config.enables.find(_.getPath.contains(configName)).fold(false)(_.get())
   }
 
-  def content(filters: Seq[Filter[T]]): Seq[String]
+  def content(filters: Seq[Filter[T]], server: MinecraftServer): Seq[String]
 
   def getFilters: Seq[Filter[T]] = Nil
 

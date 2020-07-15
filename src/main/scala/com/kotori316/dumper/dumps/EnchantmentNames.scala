@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
-object EnchantmentNames extends Dumps[Enchantment] {
+object EnchantmentNames extends FastDumps[Enchantment] {
   override val configName: String = "OutputEnchantments"
   override val fileName: String = "enchantment"
   final val formatter = new Formatter[EData](Seq(" ID", "-name", "-Registry Name", "MaxLevel", "Rarity", "Treasure"),

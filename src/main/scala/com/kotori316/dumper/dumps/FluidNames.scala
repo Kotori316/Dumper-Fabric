@@ -7,7 +7,7 @@ import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
-object FluidNames extends Dumps[Fluid] {
+object FluidNames extends FastDumps[Fluid] {
   override val configName: String = "OutputFluid"
   override val fileName: String = "fluid"
 

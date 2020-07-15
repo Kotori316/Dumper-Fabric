@@ -1,6 +1,7 @@
 package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
+import net.minecraft.server.MinecraftServer
 import net.minecraft.tags._
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.IForgeRegistryEntry
@@ -15,7 +16,7 @@ object TagDump extends Dumps[Tag[_]] {
     Seq(_.name, _.content.size, _.contentRegistryNames().mkString(", "))
   )
 
-  override def content(filters: Seq[Filter[Tag[_]]]): Seq[String] = {
+  override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
     tagToMessage(ItemTags.getCollection, "Items") ++
       tagToMessage(BlockTags.getCollection, "Blocks") ++
       tagToMessage(FluidTags.getCollection, "Fluids") ++

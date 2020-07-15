@@ -6,7 +6,7 @@ import net.minecraftforge.forgespi.language.{IModFileInfo, IModInfo}
 
 import scala.jdk.CollectionConverters._
 
-object ModNames extends Dumps[IModInfo] {
+object ModNames extends FastDumps[IModInfo] {
 
   override val configName: String = "OutputModNames"
   override val fileName: String = "mods"

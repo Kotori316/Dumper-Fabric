@@ -11,7 +11,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.control.Exception._
 import scala.util.{Failure, Success, Try}
 
-object TENames extends Dumps[TileEntity] {
+object TENames extends FastDumps[TileEntity] {
   override val configName: String = "OutputTileentity"
   override val fileName: String = "tileentity"
 

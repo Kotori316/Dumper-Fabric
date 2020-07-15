@@ -3,6 +3,7 @@ package com.kotori316.dumper.dumps.items
 import com.kotori316.dumper.dumps.{Dumps, Filter}
 import net.minecraft.block.Block
 import net.minecraft.item.{BlockItem, Item, ItemStack, Items}
+import net.minecraft.server.MinecraftServer
 import net.minecraft.tags.BlockTags
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.{NonNullList, ResourceLocation}
@@ -16,7 +17,7 @@ object BlocksDump extends Dumps[Block] {
 
   override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
 
-  override def content(filters: Seq[Filter[Block]]): Seq[String] = {
+  override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
     val vanillaRegistry: Registry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WRAPPER_ID, classOf[Registry[Block]])
 
     ForgeRegistries.BLOCKS.asScala.map(b => BD.apply(b, vanillaRegistry.getId(b))).flatMap(_.stacks).map { e: BlockStack =>

@@ -3,6 +3,7 @@ package com.kotori316.dumper.dumps.items
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
 import net.minecraft.item.{ItemGroup, ItemStack}
+import net.minecraft.server.MinecraftServer
 import net.minecraft.util.NonNullList
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -19,7 +20,7 @@ object ItemsDump extends Dumps[ItemData] {
 
   override def getFilters: Seq[Filter[ItemData]] = Seq(new PickaxeFilter, new AxeFilter, new ShovelFilter, new SwordFilter)
 
-  override def content(filters: Seq[Filter[ItemData]]): Seq[String] = {
+  override def content(filters: Seq[Filter[ItemData]], server: MinecraftServer): Seq[String] = {
     val items = ForgeRegistries.ITEMS
     val stacks = CollectionConverters.asScala(items)
       .flatMap { item =>
