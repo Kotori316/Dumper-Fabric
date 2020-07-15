@@ -15,7 +15,7 @@ import scala.util.Failure
 
 object DumperInternal {
   val loadCompleteDumpers: Seq[FastDumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames)
-  val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump, TagDump)
+  val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump, TagDump, RecipeNames)
 
   def loadComplete(event: FMLLoadCompleteEvent): Unit = {
     output(loadCompleteDumpers, null)
