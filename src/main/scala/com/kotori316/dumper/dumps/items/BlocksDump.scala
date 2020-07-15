@@ -1,15 +1,15 @@
 package com.kotori316.dumper.dumps.items
 
-import com.kotori316.dumper.dumps.{Dumps, Filter}
+import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
 import net.minecraft.block.Block
-import net.minecraft.item.{BlockItem, Item, ItemStack, Items}
+import net.minecraft.item.{BlockItem, ItemStack}
 import net.minecraft.server.MinecraftServer
-import net.minecraft.tags.BlockTags
-import net.minecraft.util.registry.Registry
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.util.{NonNullList, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 object BlocksDump extends Dumps[Block] {
   override val configName: String = "outputBlocks"
@@ -17,81 +17,41 @@ object BlocksDump extends Dumps[Block] {
 
   override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
 
-  override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
-    val vanillaRegistry: Registry[Block] = ForgeRegistries.BLOCKS.getSlaveMap(WRAPPER_ID, classOf[Registry[Block]])
+  private final val formatter = new Formatter[Data](
+    Seq("-Name", "-RegistryName", "Item Class", "-Properties", "-Tag"),
+    Seq(_.name, _.registryName, _.itemClass, _.properties, _.tags)
+  )
 
-    ForgeRegistries.BLOCKS.asScala.map(b => BD.apply(b, vanillaRegistry.getId(b))).flatMap(_.stacks).map { e: BlockStack =>
-      filters.find(_.addToList(e.bd.block))
-      e.o
-    }.zipWithIndex.map { case (s, i) => "%4d : %s".format(i, s) }.toSeq
+  override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
+    ForgeRegistries.BLOCKS.forEach(b => filters.foreach(_.addToList(b)))
+    val blockList = for {
+      block <- ForgeRegistries.BLOCKS.asScala
+      stack <- NonNullList.create[ItemStack]().tap(i => block.fillItemGroup(block.asItem().getGroup, i)).asScala
+    } yield Data(block, stack)
+    formatter.format(blockList.toSeq)
   }
 
   def oreNameSeq(block: Block): Iterable[ResourceLocation] = {
-    BlockTags.getCollection.getTagMap.asScala.collect { case (key, tag) if tag.func_230235_a_(block) => key }
+    block.getTags.asScala
   }
 
-  case class BD(block: Block, id: Int) {
-    val item: Option[Item] = Option(block.asItem())
-    val name: ResourceLocation = block.getRegistryName
-    val blocks: NonNullList[ItemStack] = NonNullList.create[ItemStack]()
-    item.foreach(i => block.fillItemGroup(i.getGroup, blocks))
-
-    def stacks: Seq[BlockStack] = {
-      if (blocks.isEmpty) {
-        return Nil
-      }
-      val f :: rest = blocks.asScala.toList
-      FBS(this, f) :: rest.map(s => BlockStack(this, s))
-    }
-  }
-
-  val f = "%4d : %s"
-
-  sealed trait BlockStack {
-    val o: String
-    val bd: BD
-    val stack: ItemStack
-  }
-
-  object BlockStack {
-    def apply(p_bd: BD, p_stack: ItemStack): BlockStack = {
-      if (!p_stack.isEmpty)
-        NNStack(p_bd, p_stack)
-      else {
-        new BlockStack {
-          override val o: String = f.format(p_bd.id, "")
-          override val bd: BD = p_bd
-          override val stack: ItemStack = ItemStack.EMPTY
-        }
-      }
-    }
-  }
-
-  case class NNStack(bd: BD, stack: ItemStack) extends BlockStack {
-    val o: String = f.format(bd.id, stack.getDisplayName.getUnformattedComponentText) + oreName(stack)
-  }
-
-  case class FBS(bd: BD, stack: ItemStack) extends BlockStack {
-
-    def classString: String = {
-      bd.item.map { i =>
-        val clazz = i.getClass
-        if (clazz != classOf[BlockItem])
-          " : " + clazz.getName
-        else ""
-      }.getOrElse("Null")
+  private case class Data(block: Block, stack: ItemStack) {
+    def name: String = if (stack.isEmpty) {
+      new TranslationTextComponent(block.getTranslationKey).getString
+    } else {
+      stack.getDisplayName.getString
     }
 
-    val o: String =
-      if (stack.isEmpty) {
-        if (bd.item contains Items.AIR)
-          f.format(bd.id, bd.block.getTranslationKey) + " : " + bd.name
-        else
-          f.format(bd.id, bd.item.map(_.getDisplayName(stack)).getOrElse("Null")) + " : " + bd.name
-      } else {
-        f.format(bd.id, stack.getDisplayName.getString) +
-          classString + " : " + bd.name + oreName(stack)
-      }
+    def registryName: ResourceLocation = block.getRegistryName
+
+    def itemClass: String = stack.getItem.getClass match {
+      case c if c == classOf[BlockItem] => ""
+      case c => c.getName
+    }
+
+    def tags: String = block.getTags.asScala.toSeq.sortBy(_.toString).mkString(", ")
+
+    def properties: String = block.getStateContainer.getProperties.asScala.map(_.getName).mkString(", ")
   }
 
 }
