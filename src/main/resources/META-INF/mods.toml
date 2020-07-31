@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[28,)"
 issueTrackerURL="https://github.com/Kotori316/Dumper/issues"
+license="All Rights Reserved."
 [[mods]]
 modId="kotori_dumper"
 version="${file.jarVersion}"
