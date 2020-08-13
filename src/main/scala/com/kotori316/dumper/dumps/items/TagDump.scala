@@ -23,9 +23,9 @@ object TagDump extends Dumps[Tag[_]] {
       tagToMessage(EntityTypeTags.getCollection, "Entities")
   }
 
-  def tagToMessage(collection: TagCollection[_], name: String): Seq[String] = {
-    val map: Map[ResourceLocation, ITag[_]] = CollectionConverters.asScala(collection.getTagMap).toMap
-    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.func_230236_b_()).toSeq) }.toSeq
+  def tagToMessage(collection: ITagCollection[_], name: String): Seq[String] = {
+    val map: Map[ResourceLocation, ITag[_]] = CollectionConverters.asScala(collection.func_241833_a()).toMap
+    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.getAllElements()).toSeq) }.toSeq
       .sortBy(_.name)
     ("-" * 10 + name + "-" * 10) +: formatter.format(tagSeq) :+ "\n"
   }

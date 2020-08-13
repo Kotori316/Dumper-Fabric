@@ -55,11 +55,11 @@ class WoodFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "wood.txt")
 
   override def accept(block: Block): Boolean = {
-    if (BlockTags.LOGS.func_230235_a_(block) || ItemTags.LOGS.func_230235_a_(block.asItem()))
+    if (BlockTags.LOGS.contains(block) || ItemTags.LOGS.contains(block.asItem()))
       return true
     var nameFlag = false
     DistExecutor.safeCallWhenOn(Dist.CLIENT, () => () => {
-      val s = block.func_235333_g_().getUnformattedComponentText
+      val s = block.getTranslatedName().getUnformattedComponentText
       if (woodPATTERN.matcher(s).matches)
         nameFlag = true
     })
@@ -73,5 +73,5 @@ class WoodFilter extends SFilter {
 class LeaveFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "leave.txt")
 
-  override def accept(block: Block): Boolean = BlockTags.LEAVES.func_230235_a_(block) || ItemTags.LEAVES.func_230235_a_(block.asItem())
+  override def accept(block: Block): Boolean = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
 }

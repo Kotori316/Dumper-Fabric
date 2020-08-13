@@ -63,8 +63,8 @@ class SwordFilter extends Filter[ItemData] {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
       val valueMap = v.item.getAttributeModifiers(EquipmentSlotType.MAINHAND, v.stack)
-      val damage = valueMap.get(Attributes.field_233823_f_).asScala.map(_.getAmount)
-      val speed = valueMap.get(Attributes.field_233825_h_).asScala.map(f => "%.1f".format(f.getAmount * -1))
+      val damage = valueMap.get(Attributes.ATTACK_DAMAGE).asScala.map(_.getAmount)
+      val speed = valueMap.get(Attributes.ATTACK_SPEED).asScala.map(f => "%.1f".format(f.getAmount * -1))
       SWORDBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + damage.mkString(", ") + " : " + speed.mkString(", "))
       SWORDShortBuilder += uniqueName
       true
