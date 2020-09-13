@@ -63,9 +63,9 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.2-33.0.32'
+    minecraft 'net.minecraftforge:forge:1.16.3-34.0.1'
     implementation "org.scala-lang:scala-library:2.13.3"
-    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.1.0'
+    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.2.0'
 }
 
 jar {
