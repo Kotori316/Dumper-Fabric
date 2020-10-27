@@ -1,9 +1,9 @@
 package com.kotori316.dumper.dumps
 
 import net.minecraft.enchantment.Enchantment
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.text.{TextFormatting, TranslationTextComponent}
+import net.minecraft.util.{RegistryKey, ResourceLocation}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -35,8 +35,8 @@ object EnchantmentNames extends FastDumps[Enchantment] {
   }
 
   object EData {
-    def apply(e: java.util.Map.Entry[ResourceLocation, Enchantment])(implicit r: Registry[Enchantment]): EData = {
-      new EData(e.getKey, e.getValue, r.getId(e.getValue))
+    def apply(e: java.util.Map.Entry[RegistryKey[Enchantment], Enchantment])(implicit r: Registry[Enchantment]): EData = {
+      new EData(e.getKey.getRegistryName, e.getValue, r.getId(e.getValue))
     }
   }
 
