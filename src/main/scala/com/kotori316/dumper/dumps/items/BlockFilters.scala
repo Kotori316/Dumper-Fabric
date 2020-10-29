@@ -59,7 +59,7 @@ class WoodFilter extends SFilter {
       return true
     var nameFlag = false
     DistExecutor.safeCallWhenOn(Dist.CLIENT, () => () => {
-      val s = block.getTranslatedName().getUnformattedComponentText
+      val s = block.getTranslatedName.getUnformattedComponentText
       if (woodPATTERN.matcher(s).matches)
         nameFlag = true
     })
