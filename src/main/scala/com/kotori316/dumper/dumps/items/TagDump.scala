@@ -17,10 +17,12 @@ object TagDump extends Dumps[Tag[_]] {
   )
 
   override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
+    import scala.jdk.CollectionConverters._
     tagToMessage(ItemTags.getCollection, "Items") ++
       tagToMessage(BlockTags.getCollection, "Blocks") ++
       tagToMessage(FluidTags.getCollection, "Fluids") ++
-      tagToMessage(EntityTypeTags.getCollection, "Entities")
+      tagToMessage(EntityTypeTags.getCollection, "Entities") ++
+      TagCollectionManager.getManager.getCustomTagTypes.asScala.flatMap { case (name, c) => tagToMessage(c, name.toString) }
   }
 
   def tagToMessage(collection: ITagCollection[_], name: String): Seq[String] = {
