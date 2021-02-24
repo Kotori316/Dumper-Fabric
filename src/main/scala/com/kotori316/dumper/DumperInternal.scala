@@ -14,7 +14,7 @@ import scala.concurrent.Future
 import scala.util.Failure
 
 object DumperInternal {
-  val loadCompleteDumpers: Seq[FastDumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames)
+  val loadCompleteDumpers: Seq[FastDumps[_]] = Seq(ModNames, EnchantmentNames, FluidNames, TENames, EntityNames)
   val loginDumpers: Seq[Dumps[_]] = Seq(ItemsDump, BlocksDump, TagDump, RecipeNames)
 
   def loadComplete(event: FMLLoadCompleteEvent): Unit = {
