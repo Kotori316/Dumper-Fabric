@@ -4,8 +4,10 @@ import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
 import net.minecraft.block.Block
 import net.minecraft.item.{BlockItem, ItemStack}
 import net.minecraft.server.MinecraftServer
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.util.{NonNullList, ResourceLocation}
+import net.minecraft.world.EmptyBlockReader
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -18,8 +20,8 @@ object BlocksDump extends Dumps[Block] {
   override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
 
   private final val formatter = new Formatter[Data](
-    Seq("-Name", "-RegistryName", "Item Class", "-Properties", "-Tag"),
-    Seq(_.name, _.registryName, _.itemClass, _.properties, _.tags)
+    Seq("-Name", "-RegistryName", "Hardness", "Item Class", "-Properties", "-Tag"),
+    Seq(_.name, _.registryName, _.block.getDefaultState.getBlockHardness(EmptyBlockReader.INSTANCE, BlockPos.ZERO), _.itemClass, _.properties, _.tags)
   )
 
   override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
