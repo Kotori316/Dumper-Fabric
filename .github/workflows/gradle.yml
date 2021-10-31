@@ -19,22 +19,17 @@ jobs:
         
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kotori316/fictional-meme/fictional-meme:1.17.1
+      credentials:
+        username: kotori316
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - uses: actions/cache@v1
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+    - uses: actions/checkout@v2
     - name: Precompile
-      run: chmod +x ./gradlew && ./gradlew compileScala --continue
+      run: chmod +x ./gradlew && ./gradlew compileScala --continue --stacktrace
     - name: Build
-      run: chmod +x ./gradlew && ./gradlew build githubRelease --info --warning-mode all --continue
+      run: chmod +x ./gradlew && ./gradlew build githubRelease --stacktrace --warning-mode all --continue
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
