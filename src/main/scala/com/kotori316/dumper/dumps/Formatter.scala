@@ -10,7 +10,7 @@ class Formatter[A](rows: Seq[String], converters: Seq[A => Any]) {
       case (s1, s2) => (s1 zip s2).map { case (i, i1) => i max i1 }
     }
     val secondRow = makeSecondRow(lengthMaxes)
-    val formatString = (lengthMaxes zip rows).map { case (i, str) => s"%${getMinus(str)}${i}s" }.mkString("|", " | ", "|")
+    val formatString = (lengthMaxes zip rows).map { case (i, str) => s"%${getMinus(str)}${i}s" }.mkString("| ", " | ", " |")
     (removeMinus(rows) +: secondRow +: converted).map(ss => formatString.format(ss: _*))
       .map(s => ("0" + s).trim.substring(1))
   }
