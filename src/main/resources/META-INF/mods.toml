@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[37,)"
 issueTrackerURL="https://github.com/Kotori316/Dumper/issues"
 license="All Rights Reserved."
 [[mods]]
@@ -14,12 +14,12 @@ Output much info.'''
 [[dependencies.fluidtank]]
     modId="forge"
     mandatory=true
-    versionRange="[28,)"
+    versionRange="[37,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.fluidtank]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4,)"
+    versionRange="[1.17.1,)"
     ordering="NONE"
     side="BOTH"
