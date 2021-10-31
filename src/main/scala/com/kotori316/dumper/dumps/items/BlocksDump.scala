@@ -20,7 +20,7 @@ object BlocksDump extends Dumps[Block] {
 
   private final val formatter = new Formatter[Data](
     Seq("-Name", "-RegistryName", "Hardness", "Item Class", "-Properties", "-Tag"),
-    Seq(_.name, _.registryName, _.block.defaultBlockState().getDestroySpeed(EmptyBlockGetter.INSTANCE, BlockPos.ZERO), _.itemClass, _.properties, _.tags)
+    Seq(_.name, _.registryName, _.hardness, _.itemClass, _.properties, _.tags)
   )
 
   override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
@@ -53,6 +53,8 @@ object BlocksDump extends Dumps[Block] {
     def tags: String = block.getTags.asScala.toSeq.sortBy(_.toString).mkString(", ")
 
     def properties: String = block.getStateDefinition.getProperties.asScala.map(_.getName).mkString(", ")
+
+    def hardness: Float = block.defaultBlockState().getDestroySpeed(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)
   }
 
 }
