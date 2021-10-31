@@ -3,6 +3,7 @@ package com.kotori316.dumper.dumps
 import java.util
 
 import net.minecraft.core.{BlockPos, Direction}
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
@@ -59,7 +60,8 @@ object TENames extends FastDumps[BlockEntity] {
   }
 
   private def getStateForBlockEntity(entityType: BlockEntityType[_]): BlockState = {
-    val set = fieldValidBlocks.get(entityType).asInstanceOf[util.Set[BlockState]]
-    set.iterator().next()
+    fieldValidBlocks.get(entityType).asInstanceOf[util.Set[Block]].asScala
+      .head
+      .defaultBlockState()
   }
 }
