@@ -15,7 +15,7 @@ object ModNames extends FastDumps[IModInfo] {
     Seq(_.num, _.getModId, d => "\"" + d.getName + "\"", _.mod.getVersion, _.getSource match {
       case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
       case _ => ""
-    }, data => ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")))
+    }, data => ModList.get().getModObjectById[AnyRef](data.getModId).map[String](o => o.getClass.getName).orElse("Dummy")))
 
   override def content(filters: Seq[Filter[IModInfo]]): Seq[String] = {
     val modContainers = ModList.get().getMods.asScala.zipWithIndex.map((ModData.apply _).tupled)

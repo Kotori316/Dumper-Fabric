@@ -2,9 +2,9 @@ package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
-import net.minecraft.item.{ItemGroup, ItemStack}
+import net.minecraft.core.NonNullList
 import net.minecraft.server.MinecraftServer
-import net.minecraft.util.NonNullList
+import net.minecraft.world.item.{CreativeModeTab, ItemStack}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.javaapi.CollectionConverters
@@ -26,10 +26,10 @@ object ItemsDump extends Dumps[ItemData] {
       .flatMap { item =>
         val nonNullList = NonNullList.create[ItemStack]()
         Try {
-          if (item.getGroup != null) {
-            item.fillItemGroup(item.getGroup, nonNullList)
+          if (item.getItemCategory != null) {
+            item.fillItemCategory(item.getItemCategory, nonNullList)
           } else {
-            ItemGroup.GROUPS.foreach(item.fillItemGroup(_, nonNullList))
+            CreativeModeTab.TABS.foreach(item.fillItemCategory(_, nonNullList))
           }
           if (nonNullList.isEmpty) nonNullList.add(new ItemStack(item))
         }.recover {

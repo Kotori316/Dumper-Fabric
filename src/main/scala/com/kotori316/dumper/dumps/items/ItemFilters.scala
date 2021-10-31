@@ -5,10 +5,10 @@ import java.util.regex.Pattern
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
-import net.minecraft.block.Blocks
-import net.minecraft.entity.ai.attributes.Attributes
-import net.minecraft.inventory.EquipmentSlotType
-import net.minecraft.item._
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.item._
+import net.minecraft.world.level.block.Blocks
 
 import scala.jdk.CollectionConverters._
 
@@ -21,14 +21,14 @@ class PickaxeFilter extends Filter[ItemData] {
 
   def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[PickaxeItem] ||
-      PICKAXE_PATTERN.matcher(item.getTranslationKey).matches ||
+      PICKAXE_PATTERN.matcher(item.getDescriptionId).matches ||
       PICKAXE_PATTERN.matcher(displayName).matches ||
       PICKAXE_PATTERN2.matcher(uniqueName).find
 
   override def addToList(v: ItemData): Boolean = {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
-      pickaxeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.STONE.getDefaultState))
+      pickaxeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.STONE.defaultBlockState()))
       pickaxeShortBuilder += uniqueName
       true
     } else
@@ -55,14 +55,14 @@ class SwordFilter extends Filter[ItemData] {
 
   def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[SwordItem] ||
-      SWORD_PATTERN.matcher(item.getTranslationKey).matches ||
+      SWORD_PATTERN.matcher(item.getDescriptionId).matches ||
       SWORD_PATTERN.matcher(displayName).matches ||
       SWORD_PATTERN2.matcher(uniqueName).find
 
   override def addToList(v: ItemData): Boolean = {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
-      val valueMap = v.item.getAttributeModifiers(EquipmentSlotType.MAINHAND, v.stack)
+      val valueMap = v.item.getAttributeModifiers(EquipmentSlot.MAINHAND, v.stack)
       val damage = valueMap.get(Attributes.ATTACK_DAMAGE).asScala.map(_.getAmount)
       val speed = valueMap.get(Attributes.ATTACK_SPEED).asScala.map(f => "%.1f".format(f.getAmount * -1))
       SWORDBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + damage.mkString(", ") + " : " + speed.mkString(", "))
@@ -92,14 +92,14 @@ class ShovelFilter extends Filter[ItemData] {
 
   def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[ShovelItem] ||
-      SHOVEL_PATTERN.matcher(item.getTranslationKey).matches ||
+      SHOVEL_PATTERN.matcher(item.getDescriptionId).matches ||
       SHOVEL_PATTERN.matcher(displayName).matches ||
       SHOVEL_PATTERN2.matcher(uniqueName).find
 
   override def addToList(v: ItemData): Boolean = {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
-      SHOVELBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.GRASS_BLOCK.getDefaultState))
+      SHOVELBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.GRASS_BLOCK.defaultBlockState()))
       SHOVELShortBuilder += uniqueName
       true
     } else
@@ -126,14 +126,14 @@ class AxeFilter extends Filter[ItemData] {
 
   def accept(item: Item, displayName: String, uniqueName: String): Boolean =
     item.isInstanceOf[AxeItem] ||
-      AXE_PATTERN.matcher(item.getTranslationKey).matches ||
+      AXE_PATTERN.matcher(item.getDescriptionId).matches ||
       AXE_PATTERN.matcher(displayName).matches ||
       AXE_PATTERN2.matcher(uniqueName).find
 
   override def addToList(v: ItemData): Boolean = {
     val uniqueName = v.item.getRegistryName.toString
     if (accept(v.item, v.displayName, uniqueName)) {
-      axeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.OAK_LOG.getDefaultState))
+      axeBuilder += (v.displayName + " : " + v.stack.getMaxDamage + " : " + v.stack.getDestroySpeed(Blocks.OAK_LOG.defaultBlockState()))
       axeShortBuilder += uniqueName
       true
     } else

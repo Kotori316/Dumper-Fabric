@@ -1,9 +1,9 @@
 package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.tags._
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.registries.IForgeRegistryEntry
 
 import scala.jdk.javaapi.CollectionConverters
@@ -18,16 +18,16 @@ object TagDump extends Dumps[Tag[_]] {
 
   override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
     import scala.jdk.CollectionConverters._
-    tagToMessage(ItemTags.getCollection, "Items") ++
-      tagToMessage(BlockTags.getCollection, "Blocks") ++
-      tagToMessage(FluidTags.getCollection, "Fluids") ++
-      tagToMessage(EntityTypeTags.getCollection, "Entities") ++
-      TagCollectionManager.getManager.getCustomTagTypes.asScala.flatMap { case (name, c) => tagToMessage(c, name.toString) }
+    tagToMessage(ItemTags.getAllTags, "Items") ++
+      tagToMessage(BlockTags.getAllTags, "Blocks") ++
+      tagToMessage(FluidTags.getAllTags, "Fluids") ++
+      tagToMessage(EntityTypeTags.getAllTags, "Entities") ++
+      SerializationTags.getInstance.collections.asScala.flatMap { case (name, c) => tagToMessage(c, name.toString) }
   }
 
-  def tagToMessage(collection: ITagCollection[_], name: String): Seq[String] = {
-    val map: Map[ResourceLocation, ITag[_]] = CollectionConverters.asScala(collection.getIDTagMap).toMap
-    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.getAllElements).toSeq) }.toSeq
+  def tagToMessage(collection: TagCollection[_], name: String): Seq[String] = {
+    val map: Map[ResourceLocation, Tag[_]] = CollectionConverters.asScala(collection.getAllTags).toMap
+    val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.getValues).toSeq) }.toSeq
       .sortBy(_.name)
     ("-" * 10 + name + "-" * 10) +: formatter.format(tagSeq) :+ "\n"
   }

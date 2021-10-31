@@ -1,13 +1,12 @@
 package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
-import net.minecraft.block.Block
-import net.minecraft.item.{BlockItem, ItemStack}
+import net.minecraft.core.{BlockPos, NonNullList}
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.TranslationTextComponent
-import net.minecraft.util.{NonNullList, ResourceLocation}
-import net.minecraft.world.EmptyBlockReader
+import net.minecraft.world.item.{BlockItem, ItemStack}
+import net.minecraft.world.level.EmptyBlockGetter
+import net.minecraft.world.level.block.Block
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -21,14 +20,14 @@ object BlocksDump extends Dumps[Block] {
 
   private final val formatter = new Formatter[Data](
     Seq("-Name", "-RegistryName", "Hardness", "Item Class", "-Properties", "-Tag"),
-    Seq(_.name, _.registryName, _.block.getDefaultState.getBlockHardness(EmptyBlockReader.INSTANCE, BlockPos.ZERO), _.itemClass, _.properties, _.tags)
+    Seq(_.name, _.registryName, _.block.defaultBlockState().getDestroySpeed(EmptyBlockGetter.INSTANCE, BlockPos.ZERO), _.itemClass, _.properties, _.tags)
   )
 
   override def content(filters: Seq[Filter[Block]], server: MinecraftServer): Seq[String] = {
     ForgeRegistries.BLOCKS.forEach(b => filters.foreach(_.addToList(b)))
     val blockList = for {
       block <- ForgeRegistries.BLOCKS.asScala
-      stack <- NonNullList.create[ItemStack]().tap(i => block.fillItemGroup(block.asItem().getGroup, i)).asScala
+      stack <- NonNullList.create[ItemStack]().tap(i => block.fillItemCategory(block.asItem().getItemCategory, i)).asScala
     } yield Data(block, stack)
     formatter.format(blockList.toSeq)
   }
@@ -39,9 +38,9 @@ object BlocksDump extends Dumps[Block] {
 
   private case class Data(block: Block, stack: ItemStack) {
     def name: String = if (stack.isEmpty) {
-      new TranslationTextComponent(block.getTranslationKey).getString
+      block.getName.getString
     } else {
-      stack.getDisplayName.getString
+      stack.getHoverName.getString
     }
 
     def registryName: ResourceLocation = block.getRegistryName
@@ -53,7 +52,7 @@ object BlocksDump extends Dumps[Block] {
 
     def tags: String = block.getTags.asScala.toSeq.sortBy(_.toString).mkString(", ")
 
-    def properties: String = block.getStateContainer.getProperties.asScala.map(_.getName).mkString(", ")
+    def properties: String = block.getStateDefinition.getProperties.asScala.map(_.getName).mkString(", ")
   }
 
 }

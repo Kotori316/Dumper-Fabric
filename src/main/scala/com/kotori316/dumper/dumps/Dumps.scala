@@ -3,10 +3,10 @@ package com.kotori316.dumper.dumps
 import java.nio.file.{Files, Path, Paths, StandardCopyOption}
 
 import com.kotori316.dumper.Dumper
-import net.minecraft.item.ItemStack
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.tags.ItemTags
-import net.minecraft.util.ResourceLocation
+import net.minecraft.world.item.ItemStack
 
 import scala.jdk.CollectionConverters._
 
@@ -58,6 +58,6 @@ trait Dumps[T] {
   }
 
   def oreNameSeq(stack: ItemStack): Iterator[ResourceLocation] = {
-    ItemTags.getCollection.getIDTagMap.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }.iterator
+    ItemTags.getAllTags.getAllTags.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }.iterator
   }
 }

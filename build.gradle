@@ -1,31 +1,31 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 buildscript {
     repositories {
         mavenCentral()
         maven { url = "https://maven.minecraftforge.net/" }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 plugins {
     id('scala')
-    id "com.github.breadmoirai.github-release" version "2.2.9"
+    id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'net.minecraftforge.gradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = getProperty("modVersion")
+version = project.modVersion
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Dumper-1.16.5"
+archivesBaseName = "Dumper-17.1"
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileScala {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'official', version: '1.17.1'
     runs {
         client {
             workingDirectory project.file('Minecraft')
@@ -61,44 +61,52 @@ minecraft {
     }
 }
 
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.8'
-    implementation "org.scala-lang:scala-library:2.13.5"
-    implementation group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0'
+repositories {
+    maven {
+        name = "Azure-SLP"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        content {
+            includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
+            it.includeVersion("org.typelevel", "cats-core_2.13", "2.6.2-kotori")
+            it.includeVersion("org.typelevel", "cats-kernel_2.13", "2.6.2-kotori")
+        }
+    }
 }
+
+dependencies {
+    minecraft('net.minecraftforge:forge:' + project.forgeVersion)
+    implementation(group: 'org.scala-lang', name: 'scala-library', version: '2.13.6')
+    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.2-kotori')
+}
+
+def jarAttributeMap = [
+        "Specification-Title"     : project.name,
+        "Specification-Vendor"    : "Kotori316",
+        "Specification-Version"   : "1", // We are version 1 of ourselves
+        "Implementation-Title"    : project.name,
+        "Implementation-Version"  : project.version,
+        "Implementation-Vendor"   : "Kotori316",
+        "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
+]
 
 jar {
     manifest {
-        attributes([
-                "Specification-Title"     : project.name,
-                "Specification-Vendor"    : "Kotori316",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.version,
-                "Implementation-Vendor"   : "Kotori316",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+        attributes(jarAttributeMap)
     }
 }
 
 task srcJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier.set("sources")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'deobf'
+    archiveClassifier.set("deobf")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes([
-                "Specification-Title"     : project.name,
-                "Specification-Vendor"    : "Kotori316",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.version,
-                "Implementation-Vendor"   : "Kotori316",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+        attributes(jarAttributeMap)
     }
 }
 
@@ -136,15 +144,15 @@ if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
 }
 
 githubRelease {
-    repo = 'Dumper'
+    repo.set('Dumper')
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : String.valueOf(System.getenv("REPO_TOKEN"))
-    targetCommitish = '1.16'
+    targetCommitish.set('1.17')
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),
             srcJar.getArchiveFile().get()
     )
-    overwrite true
+    overwrite.set(true)
 }
 
 task checkOutput() {
@@ -154,7 +162,7 @@ task checkOutput() {
         println(jar.getArchiveFile().get())
         println(deobfJar.getArchiveFile().get())
         println(srcJar.getArchiveFile().get())
-        println(jar.destinationDir)
-        println(jar.destinationDir.listFiles(filter))
+        println(jar.getDestinationDirectory().orNull)
+        println(jar.getDestinationDirectory().map { it.getAsFile().listFiles(filter) }.orNull)
     }
 }

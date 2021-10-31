@@ -5,10 +5,10 @@ import java.util.regex.Pattern
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
-import net.minecraft.block.Block
-import net.minecraft.item.ItemStack
+import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.tags.{BlockTags, ItemTags}
-import net.minecraft.util.text.TranslationTextComponent
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Block
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
 
@@ -26,7 +26,7 @@ trait SFilter extends Filter[Block] {
 
   override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
-      short += new TranslationTextComponent(v.getTranslationKey).getString + BlocksDump.oreName(new ItemStack(v))
+      short += v.getName.getString + BlocksDump.oreName(new ItemStack(v))
       unique += v.getRegistryName.toString
       true
     } else false
@@ -59,7 +59,7 @@ class WoodFilter extends SFilter {
       return true
     var nameFlag = false
     DistExecutor.safeCallWhenOn(Dist.CLIENT, () => () => {
-      val s = block.getTranslatedName.getUnformattedComponentText
+      val s = block.getName.getContents
       if (woodPATTERN.matcher(s).matches)
         nameFlag = true
     })

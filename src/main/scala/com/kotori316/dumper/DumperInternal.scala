@@ -7,7 +7,7 @@ import com.kotori316.dumper.dumps.items.{BlocksDump, ItemsDump, TagDump}
 import net.minecraft.server.MinecraftServer
 import net.minecraftforge.common.ForgeConfigSpec
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

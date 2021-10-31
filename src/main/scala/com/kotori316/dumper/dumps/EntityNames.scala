@@ -1,14 +1,14 @@
 package com.kotori316.dumper.dumps
 
-import net.minecraft.entity.{EntityClassification, EntitySize, EntityType}
-import net.minecraft.util.ResourceLocation
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.{EntityDimensions, EntityType, MobCategory}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
 object EntityNames extends FastDumps[EntityType[_]] {
   override def content(filters: Seq[Filter[EntityType[_]]]): Seq[String] = {
-    val value = ForgeRegistries.ENTITIES.getEntries.asScala.toSeq.map(e => EntityData(e.getKey.getLocation, e.getValue))
+    val value = ForgeRegistries.ENTITIES.getEntries.asScala.toSeq.map(e => EntityData(e.getKey.location, e.getValue))
       .sorted
     formatter.format(value)
   }
@@ -21,16 +21,16 @@ object EntityNames extends FastDumps[EntityType[_]] {
   )
 
   final case class EntityData(location: ResourceLocation, t: EntityType[_]) {
-    def name: String = t.getName.getString
+    def name: String = t.getDescription.getString
 
     //noinspection SpellCheckingInspection
-    def isSummonable: Boolean = t.isSummonable
+    def isSummonable: Boolean = t.canSummon
 
-    def isImmuneToFire: Boolean = t.isImmuneToFire
+    def isImmuneToFire: Boolean = t.fireImmune()
 
-    def getClassification: EntityClassification = t.getClassification
+    def getClassification: MobCategory = t.getCategory
 
-    def getSize: EntitySize = t.getSize
+    def getSize: EntityDimensions = t.getDimensions
   }
 
   final implicit val pairOrder: Ordering[EntityData] =
