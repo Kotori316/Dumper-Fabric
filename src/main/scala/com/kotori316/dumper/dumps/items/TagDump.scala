@@ -15,21 +15,25 @@ object TagDump extends Dumps[Tag[_]] {
     Seq("-name", "count", "-content"),
     Seq(_.name, _.content.size, _.contentRegistryNames().mkString(", "))
   )
+  private final val ignoreTags: Set[ResourceLocation] = Set(
+    BlockTags.MINEABLE_WITH_AXE,
+    BlockTags.MINEABLE_WITH_HOE,
+    BlockTags.MINEABLE_WITH_PICKAXE,
+    BlockTags.MINEABLE_WITH_SHOVEL,
+  ).map(_.getName)
 
   override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
     import scala.jdk.CollectionConverters._
-    tagToMessage(ItemTags.getAllTags, "Items") ++
-      tagToMessage(BlockTags.getAllTags, "Blocks") ++
-      tagToMessage(FluidTags.getAllTags, "Fluids") ++
-      tagToMessage(EntityTypeTags.getAllTags, "Entities") ++
-      SerializationTags.getInstance.collections.asScala.flatMap { case (name, c) => tagToMessage(c, name.toString) }
+    SerializationTags.getInstance.collections.asScala.toSeq.sortBy(_._1.location).flatMap { case (name, c) =>
+      tagToMessage(c, name.location.toString)
+    }
   }
 
   def tagToMessage(collection: TagCollection[_], name: String): Seq[String] = {
-    val map: Map[ResourceLocation, Tag[_]] = CollectionConverters.asScala(collection.getAllTags).toMap
+    val map: Map[ResourceLocation, Tag[_]] = CollectionConverters.asScala(collection.getAllTags).filterNot(t => ignoreTags(t._1)).toMap
     val tagSeq: Seq[TagData] = map.map { case (location, value) => TagData(location.toString, CollectionConverters.asScala(value.getValues).toSeq) }.toSeq
       .sortBy(_.name)
-    ("-" * 10 + name + "-" * 10) +: formatter.format(tagSeq) :+ "\n"
+    ("# " + name) +: formatter.format(tagSeq) :+ "\n"
   }
 
   case class TagData(name: String, content: Seq[_]) {

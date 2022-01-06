@@ -3,7 +3,6 @@ package com.kotori316.dumper.dumps
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.Recipe
 
 import scala.jdk.javaapi.CollectionConverters
@@ -12,7 +11,7 @@ object RecipeNames extends Dumps[Recipe[_]] {
   override val configName: String = "OutputRecipeNames"
   override val fileName: String = "recipes"
   private final val formatter = new Formatter[RecipeData](
-    Seq("-name", "-type", "-output", "group", "-isDynamic"),
+    Seq("-name", "-type", "-output", "-group", "isDynamic"),
     Seq(_.getId, _.recipeType, _.getRecipeOutput, _.getGroup, _.isDynamic)
   )
 
@@ -30,7 +29,14 @@ object RecipeNames extends Dumps[Recipe[_]] {
 
     def getId: ResourceLocation = recipe.getId
 
-    def getRecipeOutput: ItemStack = recipe.getResultItem
+    def getRecipeOutput: String = {
+      val stack = recipe.getResultItem
+      if (stack.isEmpty) {
+        "Undefined"
+      } else {
+        stack.toString
+      }
+    }
 
     def getGroup: String = recipe.getGroup
 

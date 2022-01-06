@@ -19,7 +19,7 @@ object BlocksDump extends Dumps[Block] {
   override def getFilters: Seq[SFilter] = Seq(new OreFilter, new WoodFilter, new LeaveFilter)
 
   private final val formatter = new Formatter[Data](
-    Seq("-Name", "-RegistryName", "Hardness", "Item Class", "-Properties", "-Tag"),
+    Seq("-Name", "-RegistryName", "Hardness", "-Item Class", "-Properties", "-Tag"),
     Seq(_.name, _.registryName, _.hardness, _.itemClass, _.properties, _.tags)
   )
 
@@ -47,7 +47,7 @@ object BlocksDump extends Dumps[Block] {
 
     def itemClass: String = stack.getItem.getClass match {
       case c if c == classOf[BlockItem] => ""
-      case c => c.getName
+      case c => c.getName.replace("net.minecraft.world.item.", "")
     }
 
     def tags: String = block.getTags.asScala.toSeq.sortBy(_.toString).mkString(", ")

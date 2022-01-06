@@ -5,7 +5,6 @@ import java.util.regex.Pattern
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.tags.{BlockTags, ItemTags}
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Block

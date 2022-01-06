@@ -1,7 +1,7 @@
 package com.kotori316.dumper.dumps
 
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.entity.{EntityDimensions, EntityType, MobCategory}
+import net.minecraft.world.entity.{EntityType, MobCategory}
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -16,7 +16,7 @@ object EntityNames extends FastDumps[EntityType[_]] {
   override val configName: String = "OutputEntities"
   override val fileName: String = "entities"
   final val formatter: Formatter[EntityData] = new Formatter[EntityData](
-    "-Name" :: "-RegistryName" :: "summon able" :: "immuneToFire" :: "Classification" :: "Size" :: Nil,
+    "-Name" :: "-RegistryName" :: "summon able" :: "immuneToFire" :: "-Classification" :: "-Size" :: Nil,
     Seq(_.name, _.location, _.isSummonable, _.isImmuneToFire, _.getClassification, _.getSize)
   )
 
@@ -30,7 +30,10 @@ object EntityNames extends FastDumps[EntityType[_]] {
 
     def getClassification: MobCategory = t.getCategory
 
-    def getSize: EntityDimensions = t.getDimensions
+    def getSize: String = {
+      val dim = t.getDimensions
+      s"w=${dim.width}, h=${dim.height}, f=${dim.fixed}"
+    }
   }
 
   final implicit val pairOrder: Ordering[EntityData] =
