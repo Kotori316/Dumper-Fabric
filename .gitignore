@@ -17,6 +17,7 @@ out
 build
 .gradle
 Minecraft
+run-server
 FILES
 
 # other

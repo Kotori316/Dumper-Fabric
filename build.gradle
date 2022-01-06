@@ -5,9 +5,11 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "https://maven.minecraftforge.net/" }
+        maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 plugins {
@@ -15,26 +17,29 @@ plugins {
     id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
 version = project.modVersion
 group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Dumper-17.1"
+archivesBaseName = "Dumper-18.1"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'parchment', version: project.parchmentMapping
     runs {
         client {
             workingDirectory project.file('Minecraft')
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
+            forceExit false
 
             mods {
                 kotori_dumper {
@@ -48,9 +53,11 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
+            property('mixin.env.remapRefMap', 'true')
+            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
+            property "mixin.debug.export", "true"
             property 'forge.logging.console.level', 'info'
+            forceExit false
 
             mods {
                 kotori_dumper {
@@ -77,6 +84,10 @@ dependencies {
     minecraft('net.minecraftforge:forge:' + project.forgeVersion)
     implementation(group: 'org.scala-lang', name: 'scala-library', version: '2.13.7')
     implementation(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.2-kotori')
+
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.7-build-1", classifier: "with-library") {
+        transitive(false)
+    }
 }
 
 def jarAttributeMap = [
@@ -87,6 +98,7 @@ def jarAttributeMap = [
         "Implementation-Version"  : project.version,
         "Implementation-Vendor"   : "Kotori316",
         "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
+        'Automatic-Module-Name'   : 'dumper',
 ]
 
 jar {
@@ -146,7 +158,7 @@ if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
 githubRelease {
     repo.set('Dumper')
     token = project.hasProperty("REPO_TOKEN") ? getProperty("REPO_TOKEN") : String.valueOf(System.getenv("REPO_TOKEN"))
-    targetCommitish.set('1.17')
+    targetCommitish.set('1.18')
     releaseAssets = files(
             jar.getArchiveFile().get(),
             deobfJar.getArchiveFile().get(),

@@ -2,12 +2,12 @@ package com.kotori316.dumper;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +32,7 @@ public class Dumper {
         DumperInternal.loadComplete(event);
     }
 
-    public void onWorldLoad(FMLServerStartedEvent event) {
+    public void onWorldLoad(ServerStartedEvent event) {
         DumperInternal.worldLoaded(event);
     }
 
