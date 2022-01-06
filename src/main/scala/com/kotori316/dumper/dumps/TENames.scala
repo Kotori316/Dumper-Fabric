@@ -2,11 +2,13 @@ package com.kotori316.dumper.dumps
 
 import java.util
 
+import cpw.mods.modlauncher.Launcher
 import net.minecraft.core.{BlockPos, Direction}
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
@@ -19,8 +21,15 @@ object TENames extends FastDumps[BlockEntity] {
 
   private[this] final val field_Capacity = classOf[CapabilityManager].getDeclaredField("providers")
   field_Capacity.setAccessible(true)
-  private final val fieldValidBlocks = classOf[BlockEntityType[_]].getDeclaredField("validBlocks")
-  fieldValidBlocks.setAccessible(true)
+  private final val fieldValidBlocks = {
+    if (Launcher.INSTANCE != null) {
+      ObfuscationReflectionHelper.findField(classOf[BlockEntityType[_]], "f_58915_")
+    } else {
+      val f = classOf[BlockEntityType[_]].getDeclaredField("validBlocks")
+      f.setAccessible(true)
+      f
+    }
+  }
 
   override def content(filters: Seq[Filter[BlockEntity]]): Seq[String] = {
     val value = ForgeRegistries.BLOCK_ENTITIES
