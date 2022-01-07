@@ -20,6 +20,7 @@ object TagDump extends Dumps[Tag[_]] {
     BlockTags.MINEABLE_WITH_HOE,
     BlockTags.MINEABLE_WITH_PICKAXE,
     BlockTags.MINEABLE_WITH_SHOVEL,
+    BlockTags.WALL_POST_OVERRIDE,
   ).map(_.getName)
 
   override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
