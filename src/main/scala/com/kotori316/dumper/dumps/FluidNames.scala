@@ -1,9 +1,9 @@
 package com.kotori316.dumper.dumps
 
-import net.minecraft.network.chat.TranslatableComponent
+import net.minecraft.core.Registry
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.material.Fluid
-import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
@@ -20,12 +20,12 @@ object FluidNames extends FastDumps[Fluid] {
   private[this] final val color = "Color"
   private[this] final val hasBlock = "hasBlock"
   final val formatter = new Formatter[Fluid](Seq("-RegistryName", "-Name", luminosity, density, temperature, viscosity, gaseous, rarity, color, hasBlock),
-    Seq(_.getRegistryName, f => new TranslatableComponent(f.getAttributes.getTranslationKey).getString, _.getAttributes.getLuminosity, _.getAttributes.getDensity,
-      _.getAttributes.getTemperature.toString + " [K]", _.getAttributes.getViscosity, _.getAttributes.isGaseous, _.getAttributes.getRarity.toString,
-      _.getAttributes.getColor.toHexString, _.defaultFluidState().createLegacyBlock() != Blocks.AIR.defaultBlockState))
+    Seq(Registry.FLUID.getKey, f => f.defaultFluidState().createLegacyBlock().getBlock.getName.getString, _ => 0, _ => 0,
+      _ => s"${0} [K]", _ => 0, _ => false, _ => Rarity.COMMON,
+      _ => "00000000", _.defaultFluidState().createLegacyBlock() != Blocks.AIR.defaultBlockState))
 
   override def content(filters: Seq[Filter[Fluid]]): Seq[String] = {
-    val fluids = ForgeRegistries.FLUIDS.asScala
+    val fluids = Registry.FLUID.asScala
     formatter.format(fluids.toSeq)
   }
 

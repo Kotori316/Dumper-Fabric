@@ -1,191 +1,80 @@
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url = "https://maven.minecraftforge.net/" }
-        maven { url = 'https://maven.parchmentmc.org' }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-    }
-}
 plugins {
-    id('scala')
-    id "com.github.breadmoirai.github-release" version "2.2.12"
+    id 'scala'
+    id 'fabric-loom' version '0.11-SNAPSHOT'
+    id 'maven-publish'
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
-version = project.modVersion
-group = "com.kotori316" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Dumper"
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-minecraft {
-    mappings channel: 'parchment', version: project.parchmentMapping
-    runs {
-        client {
-            workingDirectory project.file('Minecraft')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
-            property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'info'
-            forceExit false
-
-            mods {
-                kotori_dumper {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run-server')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property('mixin.env.remapRefMap', 'true')
-            property('mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg")
-            property "mixin.debug.export", "true"
-            property 'forge.logging.console.level', 'info'
-            forceExit false
-
-            mods {
-                kotori_dumper {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
 
 repositories {
+    // Add repositories to retrieve artifacts from in here.
+    // You should only use this when depending on other mods because
+    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+    // for more information about repositories.
     maven {
-        name = "Azure-SLP"
-        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-        content {
-            includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
-            it.includeVersion("org.typelevel", "cats-core_2.13", "2.8.0-kotori")
-            it.includeVersion("org.typelevel", "cats-kernel_2.13", "2.8.0-kotori")
-        }
+        name = "REI"
+        url = "https://maven.shedaniel.me/"
     }
 }
 
 dependencies {
-    minecraft('net.minecraftforge:forge:' + project.forgeVersion)
-    implementation(group: 'org.scala-lang', name: 'scala-library', version: '2.13.8')
-    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: '2.8.0-kotori')
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.8-build-2", classifier: "with-library") {
-        transitive(false)
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    //noinspection SpellCheckingInspection
+    modImplementation "net.fabricmc:fabric-language-scala:${project.fabric_scala_version}"
+
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
 }
 
-def jarAttributeMap = [
-        "Specification-Title"     : project.name,
-        "Specification-Vendor"    : "Kotori316",
-        "Specification-Version"   : "1", // We are version 1 of ourselves
-        "Implementation-Title"    : project.name,
-        "Implementation-Version"  : project.version,
-        "Implementation-Vendor"   : "Kotori316",
-        "Implementation-Timestamp": ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-        'Automatic-Module-Name'   : 'dumper',
-]
+tasks.withType(JavaCompile).configureEach {
+    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+    it.options.release = 17
+}
+
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
 
 jar {
-    manifest {
-        attributes(jarAttributeMap)
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
     }
 }
 
-task srcJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set("sources")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier.set("deobf")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes(jarAttributeMap)
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
     }
-}
 
-// Tell the artifact system about our extra jars
-artifacts {
-    archives srcJar, deobfJar
-}
-
-task signJar2() {
-    doLast {
-        ant.signjar(
-                jar: jar.getArchiveFile().get(),
-                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-                sigalg: "SHA1withRSA",
-                digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com"
-        )
-        ant.signjar(
-                jar: deobfJar.getArchiveFile().get(),
-                alias: project.hasProperty('keyStoreAlias') ? project.getProperty('keyStoreAlias') : "",
-                keystore: project.hasProperty('keyStore') ? project.getProperty("keyStore") : "",
-                storepass: project.hasProperty('keyStorePass') ? project.getProperty('keyStorePass') : "",
-                sigalg: "SHA1withRSA",
-                digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com"
-        )
-    }
-}
-
-if (!Boolean.valueOf(System.getenv("GITHUB_ACTIONS"))) {
-    // Runs this task automatically when build is ran.
-    assemble.dependsOn(signJar2)
-}
-
-def getChangeLog() {
-    def string = """
-    Minecraft: ${project.minecraftVersion}
-    Forge: ${project.forgeVersion}
-    Mapping: Parchment ${project.parchmentMapping}
-    """ as String
-    return string.stripIndent()
-}
-
-githubRelease {
-    repo.set('Dumper')
-    token = project.findProperty("githubToken") ?: System.getenv("REPO_TOKEN") ?: ""
-    targetCommitish.set('1.18')
-    body.set(getChangeLog())
-    releaseAssets = files(
-            jar,
-            deobfJar,
-            srcJar,
-    )
-    overwrite.set(true)
-}
-
-task checkOutput() {
-    doLast {
-        FilenameFilter filter = { dir, filename -> filename.contains(project.version.toString()) }
-        println(project.version.toString())
-        println(jar.getArchiveFile().get())
-        println(deobfJar.getArchiveFile().get())
-        println(srcJar.getArchiveFile().get())
-        println(jar.getDestinationDirectory().orNull)
-        println(jar.getDestinationDirectory().map { it.getAsFile().listFiles(filter) }.orNull)
-        println(getChangeLog())
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
     }
 }

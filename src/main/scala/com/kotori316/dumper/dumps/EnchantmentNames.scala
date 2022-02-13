@@ -3,9 +3,8 @@ package com.kotori316.dumper.dumps
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Registry
 import net.minecraft.network.chat.TranslatableComponent
-import net.minecraft.resources.{ResourceKey, ResourceLocation}
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.enchantment.Enchantment
-import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
@@ -17,8 +16,8 @@ object EnchantmentNames extends FastDumps[Enchantment] {
   )
 
   override def content(filters: Seq[Filter[Enchantment]]): Seq[String] = {
-    implicit val vanillaRegistry: Registry[Enchantment] = ForgeRegistries.ENCHANTMENTS.getSlaveMap(WRAPPER_ID, classOf[Registry[Enchantment]])
-    val data = ForgeRegistries.ENCHANTMENTS.getEntries.asScala.toSeq.map(EData.apply).sorted
+    implicit val vanillaRegistry: Registry[Enchantment] = Registry.ENCHANTMENT
+    val data = Registry.ENCHANTMENT.iterator().asScala.toSeq.map(EData.apply).sorted
     val seq = formatter.format(data)
     seq
     //    val mn: Int = data.map(_.translatedName.length).max
@@ -36,8 +35,8 @@ object EnchantmentNames extends FastDumps[Enchantment] {
   }
 
   object EData {
-    def apply(e: java.util.Map.Entry[ResourceKey[Enchantment], Enchantment])(implicit r: Registry[Enchantment]): EData = {
-      new EData(e.getKey.getRegistryName, e.getValue, r.getId(e.getValue))
+    def apply(e: Enchantment)(implicit r: Registry[Enchantment]): EData = {
+      new EData(r.getKey(e), e, r.getId(e))
     }
   }
 

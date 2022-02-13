@@ -2,6 +2,8 @@ package com.kotori316.dumper.dumps.items
 
 import javax.annotation.Nonnull
 import net.minecraft.ChatFormatting
+import net.minecraft.core.Registry
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.item.{Item, ItemStack, Items}
@@ -25,4 +27,6 @@ case class ItemData(index: Int, stack: ItemStack) {
       CollectionConverters.asScala(ItemTags.getAllTags.getMatchingTags(item)).mkString(", ")
     }
   }
+
+  def getRegistryName: ResourceLocation = Registry.ITEM.getKey(item)
 }

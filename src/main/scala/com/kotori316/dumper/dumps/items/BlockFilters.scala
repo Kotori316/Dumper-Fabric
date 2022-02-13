@@ -5,11 +5,10 @@ import java.util.regex.Pattern
 
 import com.kotori316.dumper.Dumper
 import com.kotori316.dumper.dumps.Filter
+import net.minecraft.core.Registry
 import net.minecraft.tags.{BlockTags, ItemTags}
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Block
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.fml.DistExecutor
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -26,7 +25,7 @@ trait SFilter extends Filter[Block] {
   override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
       short += v.getName.getString + BlocksDump.oreName(new ItemStack(v))
-      unique += v.getRegistryName.toString
+      unique += Registry.BLOCK.getKey(v).toString
       true
     } else false
   }
@@ -54,18 +53,10 @@ class WoodFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "wood.txt")
 
   override def accept(block: Block): Boolean = {
-    if (BlockTags.LOGS.contains(block) || ItemTags.LOGS.contains(block.asItem()))
-      return true
-    var nameFlag = false
-    DistExecutor.safeCallWhenOn(Dist.CLIENT, () => () => {
-      val s = block.getName.getContents
-      if (woodPATTERN.matcher(s).matches)
-        nameFlag = true
-    })
-    if (nameFlag)
-      return true
-    val oreName = BlocksDump.oreNameSeq(block)
-    oreName.exists(n => woodDicPATTERN.matcher(n.toString).matches)
+    BlockTags.LOGS.contains(block) ||
+      ItemTags.LOGS.contains(block.asItem()) ||
+      woodPATTERN.matcher(block.getName.getString).matches ||
+      BlocksDump.oreNameSeq(block).exists(n => woodDicPATTERN.matcher(n.toString).matches)
   }
 }
 

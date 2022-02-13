@@ -1,14 +1,14 @@
 package com.kotori316.dumper.dumps
 
+import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.{EntityType, MobCategory}
-import net.minecraftforge.registries.ForgeRegistries
 
 import scala.jdk.CollectionConverters._
 
 object EntityNames extends FastDumps[EntityType[_]] {
   override def content(filters: Seq[Filter[EntityType[_]]]): Seq[String] = {
-    val value = ForgeRegistries.ENTITIES.getEntries.asScala.toSeq.map(e => EntityData(e.getKey.location, e.getValue))
+    val value = Registry.ENTITY_TYPE.iterator().asScala.toSeq.map(e => EntityData(Registry.ENTITY_TYPE.getKey(e), e))
       .sorted
     formatter.format(value)
   }

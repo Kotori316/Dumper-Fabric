@@ -1,41 +1,25 @@
 package com.kotori316.dumper.dumps
 
-import net.minecraftforge.fml.ModList
-import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo
-import net.minecraftforge.forgespi.language.{IModFileInfo, IModInfo}
+import java.nio.file.Path
+
+import net.fabricmc.api.ModInitializer
+import net.fabricmc.loader.api.{FabricLoader, ModContainer, Version}
 
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
-object ModNames extends FastDumps[IModInfo] {
+object ModNames extends FastDumps[ModContainer] {
 
   override val configName: String = "OutputModNames"
   override val fileName: String = "mods"
 
   final val formatter = new Formatter[ModData](Seq("Number", "-ModID", "-Name", "Version", "-File Name", "-Class"),
-    Seq(_.num, _.getModId, d => "\"" + d.getName + "\"", _.mod.getVersion, _.getSource match {
-      case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
-      case _ => ""
-    }, data => ModList.get().getModObjectById[AnyRef](data.getModId).map[String](o => o.getClass.getName).orElse("Dummy")))
+    Seq(_.num, _.getModId, d => "\"" + d.getName + "\"", _.getVersion, _.getFile,
+      data => data.modInstance.getOrElse("No main")))
 
-  override def content(filters: Seq[Filter[IModInfo]]): Seq[String] = {
-    val modContainers = ModList.get().getMods.asScala.zipWithIndex.map((ModData.apply _).tupled)
-    //    val apiContainers = ModAPIManager.INSTANCE.getAPIList.asScala.toSeq.sortBy(_.getModId.toLowerCase)
-    // val map = modContainers.filterNot(_.isDummy).map(o => (o.getSource, o.getSource.getMods.get(0).getDisplayName))
+  override def content(filters: Seq[Filter[ModContainer]]): Seq[String] = {
 
-    //    val maxId: Int = modContainers.map(_.idLength).max
-    //    val maxName: Int = modContainers.map(_.nameLength + 2).max
-    //    val format = s"%3d : %-${maxId}s : %-${maxName}s : %s : %s : %s"
-    //    val mods = for ((data, index) <- modContainers.zipWithIndex) yield {
-    //      val id = data.getModId
-    //      val name = "\"" + data.getName + "\""
-    //      val ver = data.mod.getVersion
-    //      val file = data.getSource match {
-    //        case modFileInfo: ModFileInfo => modFileInfo.getFile.getFileName
-    //        case _ => ""
-    //      }
-    //      val modObjClassName = ModList.get().getModObjectById[AnyRef](data.getModId).map(o => o.getClass.getName).orElse("Dummy")
-    //      format.format(index + 1, id, name, ver, file, modObjClassName)
-    //    }
+    val modContainers = FabricLoader.getInstance().getAllMods.asScala.zipWithIndex.map((ModData.apply _).tupled).toSeq
     val mods = formatter.format(modContainers)
 
     val apiS = Nil /*apiContainers.map(api => {
@@ -48,20 +32,36 @@ object ModNames extends FastDumps[IModInfo] {
     if (apiS.nonEmpty) mods ++ Seq("", "", "Supported API { ApiName, Provided, version }") ++ apiS else mods
   }
 
-  case class ModData(mod: IModInfo, i: Int) {
+  case class ModData(mod: ModContainer, i: Int) {
     val num: Int = i + 1
 
-    def getName: String = mod.getDisplayName
+    def getName: String = mod.getMetadata.getName
 
-    def getModId: String = mod.getModId
+    def getModId: String = mod.getMetadata.getId
 
-    def getSource: IModFileInfo = mod.getOwningFile
+    def getSource: Path = {
+      mod match {
+        case container: net.fabricmc.loader.impl.ModContainerImpl => container.getOriginPath
+        case m => m.getRootPath
+      }
+    }
 
-    def idLength: Int = mod.getModId.length
+    def getFile: Path = Option(getSource.getFileName).getOrElse(getSource)
+
+    def getVersion: Version = mod.getMetadata.getVersion
+
+    def idLength: Int = getModId.length
 
     def nameLength: Int = getName.length
 
     def isDummy: Boolean = getSource == null
+
+    def modInstance: Option[String] = {
+      FabricLoader.getInstance().getEntrypointContainers("main", classOf[ModInitializer])
+        .asScala
+        .find(_.getProvider == mod)
+        .map(c => Try(c.getEntrypoint).map(_.toString).getOrElse("Error"))
+    }
   }
 
 }

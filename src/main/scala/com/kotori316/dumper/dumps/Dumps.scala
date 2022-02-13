@@ -15,9 +15,6 @@ trait Dumps[T] {
   val configName: String
   val fileName: String
 
-  private[this] final val factoryClass = Class.forName("net.minecraftforge.registries.NamespacedWrapper$Factory")
-  val WRAPPER_ID: ResourceLocation = factoryClass.getDeclaredField("ID").get(null).asInstanceOf[ResourceLocation]
-
   def path: Path = Paths.get(Dumper.modID, fileName + ".txt")
 
   def apply(server: MinecraftServer): Unit = {
@@ -43,7 +40,7 @@ trait Dumps[T] {
   }
 
   protected def isEnabled = {
-    Dumper.getInstance().config.enables.find(_.getPath.contains(configName)).fold(false)(_.get())
+    true
   }
 
   def content(filters: Seq[Filter[T]], server: MinecraftServer): Seq[String]

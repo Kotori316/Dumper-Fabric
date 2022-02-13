@@ -1,6 +1,7 @@
 package com.kotori316.dumper.dumps.items
 
 import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
+import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.tags.{BlockTags, Tag}
@@ -31,6 +32,6 @@ object MineableDump extends Dumps[Tag[_]] {
   }
 
   case class Entry(block: Block) {
-    def registryName: ResourceLocation = block.getRegistryName
+    def registryName: ResourceLocation = Registry.BLOCK.getKey(block)
   }
 }

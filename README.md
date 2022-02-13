@@ -1,12 +1,10 @@
-# Dumper
+# Dumper-Fabric
 
 Dump much information of Minecraft registries. This mod saves output files in `kotori_dumper` directory.
 
 Some files are generated during loadComplete(before main menu), and others are in world loading.
 
 Download - https://github.com/Kotori316/Dumper/releases
-
-Requires [Scalable Cat's Force](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force/files/3488867).
 
 * Items (Axe, Pickaxe, Shovel, Sword and others)
 * Blocks (Ores, Woods, Leaves and others)
