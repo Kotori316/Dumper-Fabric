@@ -21,11 +21,14 @@ public class Dumper implements ModInitializer {
     }
 
     public void onWorldLoad(MinecraftServer server) {
-        DumperInternal.loadComplete(server);
         DumperInternal.worldLoaded(server);
     }
 
     public static Dumper getInstance() {
         return dumper;
+    }
+
+    public static boolean isEnabled(String key) {
+        return DumperInternal.isEnabled(key);
     }
 }

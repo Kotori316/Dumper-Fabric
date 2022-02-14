@@ -17,11 +17,11 @@ trait Dumps[T] {
 
   def path: Path = Paths.get(Dumper.modID, fileName + ".txt")
 
-  def apply(server: MinecraftServer): Unit = {
+  def apply(server: MinecraftServer): Boolean = {
     output(getFilters, server)
   }
 
-  def output(filters: Seq[Filter[T]], server: MinecraftServer): Unit = {
+  def output(filters: Seq[Filter[T]], server: MinecraftServer): Boolean = {
     if (isEnabled) {
       val path1 = Paths.get(Dumper.modID, s"1_${fileName}_1.txt")
       val path2 = Paths.get(Dumper.modID, s"2_${fileName}_2.txt")
@@ -36,11 +36,14 @@ trait Dumps[T] {
       Files.write(path, strings.asJava)
 
       filters.foreach(_.writeToFile())
+      true
+    } else {
+      false
     }
   }
 
   protected def isEnabled = {
-    true
+    Dumper.isEnabled(configName)
   }
 
   def content(filters: Seq[Filter[T]], server: MinecraftServer): Seq[String]
