@@ -3,12 +3,13 @@ package com.kotori316.dumper.dumps
 import java.nio.file.{Files, Path, Paths, StandardCopyOption}
 
 import com.kotori316.dumper.Dumper
+import net.minecraft.core.Holder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
-import net.minecraft.tags.ItemTags
-import net.minecraft.world.item.ItemStack
 
 import scala.jdk.CollectionConverters._
+import scala.jdk.StreamConverters._
+import scala.language.reflectiveCalls
 
 trait Dumps[T] {
 
@@ -50,14 +51,14 @@ trait Dumps[T] {
 
   def getFilters: Seq[Filter[T]] = Nil
 
-  def oreName(stack: ItemStack): String = {
-    oreNameSeq(stack).mkString(", ") match {
+  def tagName(obj: {def builtInRegistryHolder(): Holder.Reference[_]}): String = {
+    tagNameSeq(obj).mkString(", ") match {
       case "" => ""
       case s => " : " + s
     }
   }
 
-  def oreNameSeq(stack: ItemStack): Iterator[ResourceLocation] = {
-    ItemTags.getAllTags.getAllTags.asScala.collect { case (name, tag) if tag.contains(stack.getItem) => name }.iterator
+  def tagNameSeq(obj: {def builtInRegistryHolder(): Holder.Reference[_]}): Seq[ResourceLocation] = {
+    obj.builtInRegistryHolder().tags().toScala(Seq).map(_.location)
   }
 }

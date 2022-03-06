@@ -4,7 +4,6 @@ import com.kotori316.dumper.dumps.{Dumps, Filter, Formatter}
 import net.minecraft.core.{BlockPos, NonNullList, Registry}
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
-import net.minecraft.tags.SerializationTags
 import net.minecraft.world.item.{BlockItem, ItemStack}
 import net.minecraft.world.level.EmptyBlockGetter
 import net.minecraft.world.level.block.Block
@@ -32,12 +31,6 @@ object BlocksDump extends Dumps[Block] {
     formatter.format(blockList.toSeq)
   }
 
-  def oreNameSeq(block: Block): Iterable[ResourceLocation] = {
-    SerializationTags.getInstance().getOrEmpty(Registry.BLOCK_REGISTRY)
-      .getMatchingTags(block)
-      .asScala
-  }
-
   private case class Data(block: Block, stack: ItemStack) {
     def name: String = if (stack.isEmpty) {
       block.getName.getString
@@ -52,7 +45,7 @@ object BlocksDump extends Dumps[Block] {
       case c => c.getName.replace("net.minecraft.world.item.", "")
     }
 
-    def tags: String = oreNameSeq(block).toSeq.sortBy(_.toString).mkString(", ")
+    def tags: String = tagNameSeq(block).sortBy(_.toString).mkString(", ")
 
     def properties: String = block.getStateDefinition.getProperties.asScala.map(_.getName).mkString(", ")
 

@@ -4,10 +4,10 @@ import javax.annotation.Nonnull
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.item.{Item, ItemStack, Items}
 
+import scala.jdk.StreamConverters._
 import scala.jdk.javaapi.CollectionConverters
 
 case class ItemData(index: Int, stack: ItemStack) {
@@ -24,7 +24,7 @@ case class ItemData(index: Int, stack: ItemStack) {
         ChatFormatting.stripFormatting(enchantment.getFullname(level).getString)
       }.mkString(", ")
     } else {
-      CollectionConverters.asScala(ItemTags.getAllTags.getMatchingTags(item)).mkString(", ")
+      stack.getTags.toScala(Seq).mkString(", ")
     }
   }
 

@@ -3,8 +3,10 @@ package com.kotori316.dumper.dumps
 import java.nio.file.Path
 
 import net.fabricmc.api.ModInitializer
+import net.fabricmc.loader.api.metadata.ModOrigin
 import net.fabricmc.loader.api.{FabricLoader, ModContainer, Version}
 
+import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
@@ -40,10 +42,15 @@ object ModNames extends FastDumps[ModContainer] {
     def getModId: String = mod.getMetadata.getId
 
     def getSource: Path = {
-      mod match {
-        case container: net.fabricmc.loader.impl.ModContainerImpl => container.getOriginPath
-        case m => m.getRootPath
+      @tailrec
+      def getOriginalFile(origin: ModOrigin): Path = {
+        origin.getKind match {
+          case ModOrigin.Kind.PATH => origin.getPaths.get(0)
+          case ModOrigin.Kind.NESTED => getOriginalFile(FabricLoader.getInstance().getModContainer(origin.getParentModId).get().getOrigin)
+        }
       }
+
+      getOriginalFile(mod.getOrigin)
     }
 
     def getFile: Path = Option(getSource.getFileName).getOrElse(getSource)

@@ -26,8 +26,8 @@ object MineableDump extends Dumps[Tag[_]] {
   override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
     for {
       tag <- tags
-      entries = tag.getValues.asScala.map(Entry)
-      string <- s"# ${tag.getName}" +: formatter.format(entries) :+ System.lineSeparator()
+      entries = Registry.BLOCK.getTagOrEmpty(tag).asScala.map(_.value).map(Entry).toSeq
+      string <- s"# ${tag.location}" +: formatter.format(entries) :+ System.lineSeparator()
     } yield string
   }
 

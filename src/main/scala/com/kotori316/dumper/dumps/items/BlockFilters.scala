@@ -24,7 +24,7 @@ trait SFilter extends Filter[Block] {
 
   override final def addToList(v: Block): Boolean = {
     if (accept(v)) {
-      short += v.getName.getString + BlocksDump.oreName(new ItemStack(v))
+      short += v.getName.getString + BlocksDump.tagName(v)
       unique += Registry.BLOCK.getKey(v).toString
       true
     } else false
@@ -41,7 +41,7 @@ class OreFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "ore.txt")
 
   override def accept(block: Block): Boolean = {
-    val oreName = BlocksDump.oreNameSeq(block)
+    val oreName = BlocksDump.tagNameSeq(block)
     oreName.exists(n => oreDicPattern.matcher(n.toString).matches())
   }
 }
@@ -53,15 +53,15 @@ class WoodFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "wood.txt")
 
   override def accept(block: Block): Boolean = {
-    BlockTags.LOGS.contains(block) ||
-      ItemTags.LOGS.contains(block.asItem()) ||
+    block.defaultBlockState().is(BlockTags.LOGS) ||
+      new ItemStack(block).is(ItemTags.LOGS) ||
       woodPATTERN.matcher(block.getName.getString).matches ||
-      BlocksDump.oreNameSeq(block).exists(n => woodDicPATTERN.matcher(n.toString).matches)
+      BlocksDump.tagNameSeq(block).exists(n => woodDicPATTERN.matcher(n.toString).matches)
   }
 }
 
 class LeaveFilter extends SFilter {
   override val out: Path = Paths.get(Dumper.modID, "leave.txt")
 
-  override def accept(block: Block): Boolean = BlockTags.LEAVES.contains(block) || ItemTags.LEAVES.contains(block.asItem())
+  override def accept(block: Block): Boolean = block.defaultBlockState().is(BlockTags.LEAVES) || new ItemStack(block).is(ItemTags.LEAVES)
 }
