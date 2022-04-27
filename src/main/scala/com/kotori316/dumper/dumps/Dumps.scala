@@ -3,10 +3,12 @@ package com.kotori316.dumper.dumps
 import java.nio.file.{Files, Path, Paths, StandardCopyOption}
 
 import com.kotori316.dumper.Dumper
-import net.minecraft.core.Holder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
+import net.minecraft.world.item.Item
+import net.minecraft.world.level.block.Block
 
+import scala.annotation.nowarn
 import scala.jdk.CollectionConverters._
 import scala.jdk.StreamConverters._
 import scala.language.reflectiveCalls
@@ -51,14 +53,25 @@ trait Dumps[T] {
 
   def getFilters: Seq[Filter[T]] = Nil
 
-  def tagName(obj: {def builtInRegistryHolder(): Holder.Reference[_]}): String = {
-    tagNameSeq(obj).mkString(", ") match {
+  def tagName(obj: Block): String = combineTagName(tagNameSeq(obj))
+
+  def tagName(obj: Item): String = combineTagName(tagNameSeq(obj))
+
+  private def combineTagName(names: Seq[ResourceLocation]): String =
+    names.mkString(", ") match {
       case "" => ""
       case s => " : " + s
     }
+
+  //noinspection ScalaDeprecation
+  @nowarn
+  def tagNameSeq(obj: Block): Seq[ResourceLocation] = {
+    obj.builtInRegistryHolder().tags().toScala(Seq).map(_.location)
   }
 
-  def tagNameSeq(obj: {def builtInRegistryHolder(): Holder.Reference[_]}): Seq[ResourceLocation] = {
+  //noinspection ScalaDeprecation
+  @nowarn
+  def tagNameSeq(obj: Item): Seq[ResourceLocation] = {
     obj.builtInRegistryHolder().tags().toScala(Seq).map(_.location)
   }
 }
