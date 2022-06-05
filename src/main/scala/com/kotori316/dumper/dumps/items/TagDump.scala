@@ -8,7 +8,7 @@ import net.minecraft.tags._
 
 import scala.jdk.StreamConverters._
 
-object TagDump extends Dumps[Tag[_]] {
+object TagDump extends Dumps[TagKey[_]] {
   override val configName = "OutputTagNames"
   override val fileName = "tags"
   final val formatter = new Formatter[TagData](
@@ -23,7 +23,7 @@ object TagDump extends Dumps[Tag[_]] {
     BlockTags.WALL_POST_OVERRIDE,
   ).map(_.location)
 
-  override def content(filters: Seq[Filter[Tag[_]]], server: MinecraftServer): Seq[String] = {
+  override def content(filters: Seq[Filter[TagKey[_]]], server: MinecraftServer): Seq[String] = {
     import scala.jdk.CollectionConverters._
     Registry.REGISTRY.asScala.map(r => r.key() -> r).toSeq.sortBy(_._1.location).flatMap { case (name, c) =>
       tagToMessage[Any](c.asInstanceOf[Registry[Any]], name.location.toString)

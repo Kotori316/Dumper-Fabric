@@ -2,7 +2,7 @@ package com.kotori316.dumper.dumps
 
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Registry
-import net.minecraft.network.chat.TranslatableComponent
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.enchantment.Enchantment
 
@@ -31,7 +31,7 @@ object EnchantmentNames extends FastDumps[Enchantment] {
   case class EData(name: ResourceLocation, e: Enchantment, id: Int) extends Ordered[EData] {
     override def compare(that: EData): Int = this.id compare that.id
 
-    def translatedName: String = ChatFormatting.stripFormatting(new TranslatableComponent(e.getDescriptionId).getString)
+    def translatedName: String = ChatFormatting.stripFormatting(Component.translatable(e.getDescriptionId).getString)
   }
 
   object EData {

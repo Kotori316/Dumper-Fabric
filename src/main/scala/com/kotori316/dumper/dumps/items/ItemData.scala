@@ -24,7 +24,7 @@ case class ItemData(index: Int, stack: ItemStack) {
         ChatFormatting.stripFormatting(enchantment.getFullname(level).getString)
       }.mkString(", ")
     } else {
-      stack.getTags.toScala(Seq).mkString(", ")
+      stack.getTags.toScala(Seq).map(_.location).mkString(", ")
     }
   }
 
