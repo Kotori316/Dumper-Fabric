@@ -1,17 +1,17 @@
 package com.kotori316.dumper.dumps.items
 
-import javax.annotation.Nonnull
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.item.{Item, ItemStack, Items}
+import org.jetbrains.annotations.NotNull
 
 import scala.jdk.StreamConverters._
 import scala.jdk.javaapi.CollectionConverters
 
 case class ItemData(index: Int, stack: ItemStack) {
-  @Nonnull
+  @NotNull
   def item: Item = stack.getItem
 
   def id: Int = Item.getId(item)
