@@ -63,13 +63,13 @@ trait Dumps[T] {
       case s => " : " + s
     }
 
-  //noinspection ScalaDeprecation
+  //noinspection ScalaDeprecation,deprecation
   @nowarn
   def tagNameSeq(obj: Block): Seq[ResourceLocation] = {
     obj.builtInRegistryHolder().tags().toScala(Seq).map(_.location)
   }
 
-  //noinspection ScalaDeprecation
+  //noinspection ScalaDeprecation,deprecation
   @nowarn
   def tagNameSeq(obj: Item): Seq[ResourceLocation] = {
     obj.builtInRegistryHolder().tags().toScala(Seq).map(_.location)
